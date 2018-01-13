@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es2016",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictNullChecks": true,
+        "sourceMap": true,
+        "declaration": true,
+	      "experimentalDecorators": true,
+        "outDir": "./out"
+    },
+    "include": [
+        "./src/**/*"
+    ],
+    "exclude": [
+	      "./node_modules",
+        "./migrations"
+    ]
+}

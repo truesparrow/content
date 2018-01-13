@@ -1,0 +1,19 @@
+Dockerfile
+.dockerignore
+
+# Git
+.gitignore
+.git
+
+# Emacs backup files.
+*~
+
+# Build process output files.
+/build/
+/docs/
+
+# Anything containing .DS_Store
+.DS_Store
+
+# Secrets files
+.env
