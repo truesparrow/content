@@ -1,6 +1,6 @@
 FROM node
 
-MAINTAINER CHM SQRT2 Team <horia141@gmail.com>
+MAINTAINER CHM SQRT2 Team <contact@chm-sqrt2.com>
 
 # Setup users and groups.
 
