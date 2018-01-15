@@ -33,15 +33,13 @@ env:
   - GEMFURY_USER=truesparrow
   # GEMFURY_API_KEY=???
   - secure: "SqfKq/ubRs400F/wbK4ImILygVhpb2l51DKKbGZaJ73OdMefGsa93hkvg+N91RECSxUScx1/HMiHB4L2tdpIH/cFu4Hcl6y0XX8cNBqyzaAUI8mMxP6YA3HBJmRviqNwyI/tqmyEArEPlFZl6jb93ixGIVAJVFTiQb3xEXENIMffb61tvMz16naDypGEe6FgM6aGhAD13YNj6JGjYzLhUm4agMzIWzLsoyROJGLLAh4jDBbW8DRI+hN9EHymm4Pcqa/fl0oTRwaKYSEmOpp28fxk9R7DNAqlivcz1b5ShjgGpuZiPvb3YaGCEXLDh2yUdN5SP/8+ZV8Z6XYC4qoOGcphWFDJ/mMpWc+owoEFBAqtIuLF0pLK4k64uENbzg2fKKEsCQsif4Yo2cIIAQq7Bd4V1RDWeJB83SwdzJhvSIcrIcJBtaXlA9BZfv6kJil3ctpQ1MxuQKgX+d5NixZZCzay4DadGjJ6Etrxj/EvXMwHKBOMqOl/6XePj1AWg8G3X9/d8tJblkmC/ReiIdp7vKPANBtK2klewt97ZSsRuKLkyMdvfSkZ3PLAAZqhJVC5UQT0oQFu1oVCI20y6dmSlCxFDdd/aiUMzQ89+79zV2IbPdm4KuxH9asv05bIpB7bB9oo8tQxy0BjZ4tA+OYnWkx25uUPAJ5dZ4W3VaS9zPs="
-  # - DOCKER_HUB_USERNAME=horia141
-  # # DOCKER_HUB_PASSWORD
-  # - secure: "jiaYFcVixq4WR3fScnIY0nFRoXqWLFUHvvHQOva42q832ncyflFKyiuWGEGVilHYoSucGEBtyjzJKGfEg/Wm4jyqM3yIEniUxsc0r63afomiiiZw6h4WwG/Y/IT8UXmDFqc/Ea4oR74yGhXiP4SXjbQQd8KtjjJ2zj8afeJPu1Vt3tSTiirlrcyv6zIY3d5Vlv5Cl/2nTKszCr4+oIaQx5cnSJ36gidVYO+WJ2Z3dJ3IR9V3+iLSyQfOp2Iv3fLiOtyMHyt8LE7CUdbhHdV6yPAFmWLa/cWpWENiAryKLabqsH2ImrjXLax7JQHWvZV8IFGksAy0c0ez52uyE0CGu7jWMtC2P2lpD4ys+YXlLzX27IucbUKinc4Q1xLCQJGPl23bVxOMDmcX96vODOXQHJnuWWryl5P7TvuIeFos9yY/R306f25U71cNO475sXNQIDCW1Ak82kF6RGOatjsg6TMD64WPXOSg/6I8aX62JjXTEWJodFXbeNKj/w1G7O07KpZuBOhiQb0q61CkOsEAU2b6gFLa+lKK5QurL5HNZDL5iwA7+kE+AevX210TbaV576UgR4SnFjQxcxO7RgdvB76zm5J6TtCfvzW2x4qDfglqYjXsVutMAgZfgL8QiJOpoKRxd+DzCujyQWl3w4R1pDLatg9wupKxYitJsyDUJE4="
 
 install:
 - npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
 
 before_script:
 - psql -c 'create database truesparrow;' -U postgres
+- openssl aes-256-cbc -K $encrypted_22cca5ef00ec_key -iv $encrypted_22cca5ef00ec_iv -in gcp-ci-docker-pusher-key.json.enc -out gcp-ci-docker-pusher-key.json -d
 
 script:
 - npm run test
@@ -55,15 +53,13 @@ deploy:
   script: $(npm bin)/togemfury --user ${GEMFURY_USER} --api_key ${GEMFURY_API_KEY}
   on:
     tags: true
-# - provider: script
-#   skip_cleanup: true
-#   script: docker build --tag truesparrow/content:$TRAVIS_TAG . && docker tag truesparrow/content:$TRAVIS_TAG truesparrow/content:latest && docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD" && docker push truesparrow/content:$TRAVIS_TAG && docker push truesparrow/content:latest
-#   on:
-#     tags: true
-# - provider: heroku
-#   skip_cleanup: true
-#   app: content-staging-truesparrow
-#   api_key:
-#     secure: "bkrJktWntQN9CX+C1/u3Hbg81EeJ7siSN6qgYC8l92vCe7KiguxpXa8LyYUmw/rtmCOBrYx51QWzBc2ivaDgrfFepjA4cMDgkTGUwCEJOYwos9Dq1S6AlQPiCsPoI/GtLCPbJf7cntf8iqJiMt4GfqUDEfvagCF5qOiphQtjmCY3wrFcDDB1PgbsBTYq596eEgKr1OcLt8965AL6Krad36WcpMRTTtqVujZdFR3U+VCWCfLd6N6NAWWt8+wUkjMmK2qzv8r1QyUDfmlJbhoh9SrTmP7nIjqhGmo0NTM/j4ANOic+17xhY9I93qTjpmiFO9OZcpa24L/928wMKYB0TH7EppRoODWzOd0PNdYtY3b5BWo2Uxt+HJPH9Mh9GL76A/6mlxNUTzKRo3/uiLloIWQLmEpETjbdMwS2YVpNrsBAEjdS1LO1NkesDXqzyxelODxTNn31tbfGvT/HAPq1/GhDy7gJa3MPdEAMaTMqfOM/Ursejx4sSrJDgsXKG0equJOwTrGY55NGkUUABUDJOM4hMkars/9Q88S+wVWUyV6ruWoKfDy/ljhBSBooT0PLI9nfbsAvV452GTMp/xlkoLcZGtsrHph3TWOQnWT8Q1AEpVVx1fweD8epUCv7wyCJ7uKTq6nJODdZm1mVDkwYIkF4ntpw0uKRONvAB8ePN2M="
-#   on:
-#     tags: true
+- provider: script
+  skip_cleanup: true
+  script:
+    cat gcp-ci-docker-pusher-key.json | docker login --username _json_key --password-stdin https://eu.gcr.io;
+    docker build --tag eu.gcr.io/chmsqrt2-truesparrow-common/content:$TRAVIS_TAG .;
+    docker push eu.gcr.io/chmsqrt2-truesparrow-common/content:$TRAVIS_TAG;
+    docker build --tag eu.gcr.io/chmsqrt2-truesparrow-common/content:latest .;
+    docker push eu.gcr.io/chmsqrt2-truesparrow-common/content:latest
+  on:
+    tags: true

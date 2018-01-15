@@ -13,3 +13,4 @@
 
 # Secrets files
 .env
+gcp-*-key.json
