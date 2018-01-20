@@ -1,5 +1,6 @@
 import * as express from 'express'
 import * as knex from 'knex'
+import 'log-timestamp'
 
 import * as config from './config'
 import { newPublicContentRouter, newPrivateContentRouter } from './content-router'
@@ -11,9 +12,7 @@ async function main() {
         client: 'pg',
         connection: config.DATABASE_URL
     });
-
     const repository = new Repository(conn);
-    await repository.init();
 
     const publicContentRouter = newPublicContentRouter({
         env: config.ENV,
@@ -34,7 +33,12 @@ async function main() {
         rollbarToken: config.ROLLBAR_TOKEN
     }, repository);
 
+    console.log('Starting up');
 
+    console.log('Initializing repository & performing migrations');
+    await repository.init();
+
+    console.log('Starting web server');
     const app = express();
     app.disable('x-powered-by');
     app.use('/public', publicContentRouter);
