@@ -1,6 +1,6 @@
 {
     "name": "@truesparrow/content",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "The content service.",
     "author": "CHM SQRT2 Team",
     "scripts": {
@@ -26,10 +26,10 @@
         "tsconfig.json": "f:tsconfig.json"
     },
     "dependencies": {
-        "@truesparrow/common-js": "=0.0.1",
-        "@truesparrow/common-server-js": "=0.0.1",
-        "@truesparrow/content-sdk-js": "=0.0.1",
-        "@truesparrow/identity-sdk-js": "=0.0.1",
+        "@truesparrow/common-js": "latest",
+        "@truesparrow/common-server-js": "latest",
+        "@truesparrow/content-sdk-js": "latest",
+        "@truesparrow/identity-sdk-js": "latest",
         "async-middleware": "=1.2.1",
         "compression": "=1.7.1",
         "cookie-parser": "=1.4.3",
@@ -42,7 +42,7 @@
         "uuid": "=3.1.0"
     },
     "devDependencies": {
-        "@truesparrow/togemfury": "=0.0.3",
+        "@truesparrow/togemfury": "latest",
         "@types/bluebird": "=3.5.18",
         "@types/chai": "=4.0.8",
         "@types/compression": "=0.0.35",
