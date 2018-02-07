@@ -120,7 +120,6 @@ export class Repository {
 
                 await trx
                     .from('content.event_events')
-                    .returning('id')
                     .insert({
                         'type': EventEventType.Created,
                         'timestamp': requestTime,
@@ -190,7 +189,6 @@ export class Repository {
 
             await trx
                 .from('content.events')
-                .returning('id')
                 .insert({
                     'type': EventEventType.Updated,
                     'timestamp': requestTime,
@@ -200,15 +198,35 @@ export class Repository {
 
             // Very important: decide if the new version of the event is active or not. This is a
             // react-then-act setup, which is tricky wrt ACID. This _must_ be serializable.
+            const event = this._dbEventToEvent(dbEvent);
 
-            // TODO: do decisions
-            // based on current state we want to decide if we're active or not
-            // if previous state created && current state active
-            //   update state to active
-            //   add activation event
-            // if previous state active && current state created
-            //   update state to created
-            //   add deactivation event
+            if (event.state == EventState.Created && event.doesLookActive) {
+                await trx
+                    .from('content.events')
+                    .where({ id: event.id })
+                    .update({ state: EventState.Active, time_last_updated: requestTime });
+                await trx
+                    .from('content.event_events')
+                    .insert({
+                        'type': EventEventType.Activated,
+                        'timestamp': requestTime,
+                        'data': null,
+                        'event_id': event.id
+                    });
+            } else if (event.state == EventState.Active && !event.doesLookActive) {
+                await trx
+                    .from('content.events')
+                    .where({ id: event.id })
+                    .update({ state: EventState.Created, time_last_updated: requestTime });
+                await trx
+                    .from('content.event_events')
+                    .insert({
+                        'type': EventEventType.Deactivated,
+                        'timestamp': requestTime,
+                        'data': null,
+                        'event_id': event.id
+                    });
+            }
         });
 
         return this._dbEventToEvent(dbEvent);
