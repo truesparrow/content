@@ -3,6 +3,7 @@ import 'mocha'
 import * as td from 'testdouble'
 
 import { Env } from '@truesparrow/common-js'
+import { IdentityClient } from '@truesparrow/identity-sdk-js'
 
 import { AppConfig, newPublicContentRouter, newPrivateContentRouter } from './content-router'
 import { Repository } from './repository'
@@ -74,18 +75,21 @@ describe('PrivateContentRouter', () => {
     const repository = td.object({
     });
 
+    const identityClient = td.object({
+    });
+
     afterEach('reset test doubles', () => {
         td.reset();
     });
 
     it('can be constructed', () => {
-        const identityRouter = newPrivateContentRouter(localAppConfig, repository as Repository);
+        const identityRouter = newPrivateContentRouter(localAppConfig, repository as Repository, identityClient as IdentityClient);
 
         expect(identityRouter).is.not.null;
     });
 
     it('can be constructed with prod settings', () => {
-        const identityRouter = newPrivateContentRouter(stagingAppConfig, repository as Repository);
+        const identityRouter = newPrivateContentRouter(stagingAppConfig, repository as Repository, identityClient as IdentityClient);
 
         expect(identityRouter).is.not.null;
     });

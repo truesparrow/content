@@ -8,7 +8,7 @@ import { startupMigration } from '@truesparrow/common-server-js'
 import { Event, EventState, SubEventDetails } from '@truesparrow/content-sdk-js'
 import { CreateEventRequest, UpdateEventRequest } from '@truesparrow/content-sdk-js/dtos'
 import { EventEventType } from '@truesparrow/content-sdk-js/events'
-import { Session, User } from '@truesparrow/identity-sdk-js'
+import { User } from '@truesparrow/identity-sdk-js'
 
 
 /** The base class of errors raised by the {@link Repository} and a generic error itself. */
@@ -221,10 +221,10 @@ export class Repository {
      * @throws If the event does not exist for the user, this will raise {@link EventNotFoundError}.
      * @throws If the event has been removed, this will raise {@link EventRemovedError}.
      */
-    async getEvent(session: Session): Promise<Event> {
+    async getEvent(user: User): Promise<Event> {
         const dbEvents = await this._conn('content.events')
             .select(Repository._eventPrivateFields)
-            .where({ user_id: (session.user as User).id })
+            .where({ user_id: user.id })
             .limit(1);
 
         if (dbEvents.length == 0) {

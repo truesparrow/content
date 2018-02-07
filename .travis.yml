@@ -27,6 +27,7 @@ env:
   - PGSSLMODE=require
   - ORIGIN=null
   - CLIENTS=null
+  - IDENTITY_SERVICE_HOST=null
   - LOGGLY_TOKEN=null
   - LOGGLY_SUBDOMAIN=null
   - ROLLBAR_TOKEN=null

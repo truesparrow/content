@@ -23,6 +23,7 @@ ENV DATABASE_MIGRATIONS_DIR /truesparrow/migrations
 ENV DATABASE_MIGRATIONS_TABLE migrations_content
 ENV ORIGIN http://localhost:10001
 ENV CLIENTS http://localhost:10003,http://localhost:10004
+ENV IDENTITY_SERVICE_HOST truesparrow-identity:10000
 
 WORKDIR /truesparrow
 EXPOSE 10000

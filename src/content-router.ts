@@ -4,17 +4,30 @@
 import * as cookieParser from 'cookie-parser'
 import { wrap } from 'async-middleware'
 import * as compression from 'compression'
-import * as HttpStatus from 'http-status-codes'
 import * as express from 'express'
+import * as HttpStatus from 'http-status-codes'
+import { MarshalFrom } from 'raynor'
 
 import { Env, isLocal } from '@truesparrow/common-js'
-
 import {
     newCommonApiServerMiddleware,
     newCommonServerMiddleware,
     newLocalCommonServerMiddleware,
     Request
 } from '@truesparrow/common-server-js'
+import { IdentityClient, RequestWithIdentity, User } from '@truesparrow/identity-sdk-js'
+import {
+    newCheckXsrfTokenMiddleware,
+    newSessionMiddleware,
+    SessionInfoSource,
+    SessionLevel
+} from '@truesparrow/identity-sdk-js/server'
+import {
+    CreateEventRequest,
+    PrivateEventResponse,
+    PrivateEventResponseMarshaller,
+    UpdateEventRequest
+} from '@truesparrow/content-sdk-js/dtos'
 
 import { Repository } from './repository'
 
@@ -93,9 +106,14 @@ export function newPublicContentRouter(config: AppConfig, _repository: Repositor
  *    @path /hello GET
  * @param config - the application configuration.
  * @param repository - a repository.
+ * @param identityClient - a client for the identity service.
  * @return An {@link express.Router} doing all of the above.
  */
-export function newPrivateContentRouter(config: AppConfig, _repository: Repository): express.Router {
+export function newPrivateContentRouter(config: AppConfig, repository: Repository, identityClient: IdentityClient): express.Router {
+    const createEventRequestMarshaller = new (MarshalFrom(CreateEventRequest))();
+    const updateEventRequestMarshaller = new (MarshalFrom(UpdateEventRequest))();
+    const privateEventResponseMarshaller = new PrivateEventResponseMarshaller();
+
     const privateContentRouter = express.Router();
 
     privateContentRouter.use(cookieParser());
@@ -111,11 +129,121 @@ export function newPrivateContentRouter(config: AppConfig, _repository: Reposito
     }
     privateContentRouter.use(compression({ threshold: 0 }));
     privateContentRouter.use(newCommonApiServerMiddleware(config.clients));
+    privateContentRouter.use(newSessionMiddleware(SessionLevel.SessionAndUser, SessionInfoSource.Header, config.env, identityClient));
 
-    privateContentRouter.get('/hello', wrap(async (_req: Request, res: express.Response) => {
-        res.status(HttpStatus.OK);
-        res.write(JSON.stringify({ hello: "world" }));
-        res.end();
+    privateContentRouter.post('/events', [newCheckXsrfTokenMiddleware()], wrap(async (req: RequestWithIdentity, res: express.Response) => {
+        let createEventRequest: CreateEventRequest | null = null;
+        try {
+            createEventRequest = createEventRequestMarshaller.extract(req.body);
+        } catch (e) {
+            req.log.warn('Could not decode creation request');
+            res.status(HttpStatus.BAD_REQUEST);
+            res.end();
+            return;
+        }
+
+        try {
+            const event = await repository.createEvent(req.session.user as User, createEventRequest, req.requestTime);
+
+            const privateEventResponse = new PrivateEventResponse();
+            privateEventResponse.eventIsRemoved = false;
+            privateEventResponse.event = event;
+
+            res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+            res.status(HttpStatus.CREATED);
+            res.end();
+        } catch (e) {
+            if (e.name == 'EventAlreadyExistsError') {
+                res.status(HttpStatus.CONFLICT);
+                res.end();
+                return;
+            }
+
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
+    }));
+
+    privateContentRouter.put('/events', [newCheckXsrfTokenMiddleware()], wrap(async (req: RequestWithIdentity, res: express.Response) => {
+        let updateEventRequest: UpdateEventRequest | null = null;
+        try {
+            updateEventRequest = updateEventRequestMarshaller.extract(req.body);
+        } catch (e) {
+            req.log.warn('Could not decode update request');
+            res.status(HttpStatus.BAD_REQUEST);
+            res.end();
+            return;
+        }
+
+        try {
+            const event = await repository.updateEvent(req.session.user as User, updateEventRequest, req.requestTime);
+
+            const privateEventResponse = new PrivateEventResponse();
+            privateEventResponse.eventIsRemoved = false;
+            privateEventResponse.event = event;
+
+            res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+            res.status(HttpStatus.OK);
+            res.end();
+        } catch (e) {
+            if (e.name == 'EventRemovedError') {
+                const privateEventResponse = new PrivateEventResponse();
+                privateEventResponse.eventIsRemoved = true;
+                privateEventResponse.event = null;
+
+                res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+                res.status(HttpStatus.OK);
+                res.end();
+            }
+
+            if (e.name == 'EventNotFoundError') {
+                res.status(HttpStatus.NOT_FOUND);
+                res.end();
+                return;
+            }
+
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
+    }));
+
+    privateContentRouter.get('/events', wrap(async (req: RequestWithIdentity, res: express.Response) => {
+        try {
+            const event = await repository.getEvent(req.session.user as User);
+
+            const privateEventResponse = new PrivateEventResponse();
+            privateEventResponse.eventIsRemoved = false;
+            privateEventResponse.event = event;
+
+            res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+            res.status(HttpStatus.OK);
+            res.end();
+        } catch (e) {
+            if (e.name == 'EventRemovedError') {
+                const privateEventResponse = new PrivateEventResponse();
+                privateEventResponse.eventIsRemoved = true;
+                privateEventResponse.event = null;
+
+                res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+                res.status(HttpStatus.OK);
+                res.end();
+            }
+
+            if (e.name == 'EventNotFoundError') {
+                res.status(HttpStatus.NOT_FOUND);
+                res.end();
+                return;
+            }
+
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
     }));
 
     return privateContentRouter;

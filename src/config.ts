@@ -14,6 +14,7 @@ export const DATABASE_MIGRATIONS_DIR: string = getFromEnv('DATABASE_MIGRATIONS_D
 export const DATABASE_MIGRATIONS_TABLE: string = getFromEnv('DATABASE_MIGRATIONS_TABLE');
 export const ORIGIN: string = getFromEnv('ORIGIN');
 export const CLIENTS: string[] = getFromEnv('CLIENTS').split(',');
+export const IDENTITY_SERVICE_HOST: string = getFromEnv('IDENTITY_SERVICE_HOST');
 
 export let LOGGLY_TOKEN: string | null;
 export let LOGGLY_SUBDOMAIN: string | null;
