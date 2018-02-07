@@ -41,8 +41,8 @@ async function main() {
     console.log('Starting web server');
     const app = express();
     app.disable('x-powered-by');
-    app.use('/public', publicContentRouter);
-    app.use('/private', privateContentRouter);
+    app.use('/api/public', publicContentRouter);
+    app.use('/api/private', privateContentRouter);
     app.listen(config.PORT, config.ADDRESS, () => {
         console.log(`Started ${config.NAME} service on ${config.ADDRESS}:${config.PORT}`);
     });
