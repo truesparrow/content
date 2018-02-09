@@ -2,7 +2,7 @@ import * as express from 'express'
 import * as knex from 'knex'
 import 'log-timestamp'
 
-import { InternalWebFetcher } from '@truesparrow/common-server-js'
+import { InternalWebFetcher } from '@truesparrow/common-js'
 import { newIdentityClient } from '@truesparrow/identity-sdk-js'
 
 import * as config from './config'
