@@ -47,6 +47,22 @@ export class EventAlreadyExistsError extends RepositoryError {
 }
 
 
+const SUB_EVENT_DETAILS_1 = new SubEventDetails();
+SUB_EVENT_DETAILS_1.haveEvent = false;
+SUB_EVENT_DETAILS_1.address = 'The Marriot';
+SUB_EVENT_DETAILS_1.coordinates = [0, 0];
+SUB_EVENT_DETAILS_1.dateAndTime = new Date('2019-06-10 10:30 UTC');
+const SUB_EVENT_DETAILS_2 = new SubEventDetails();
+SUB_EVENT_DETAILS_2.haveEvent = false;
+SUB_EVENT_DETAILS_2.address = 'The Marriot';
+SUB_EVENT_DETAILS_2.coordinates = [0, 0];
+SUB_EVENT_DETAILS_2.dateAndTime = new Date('2019-06-10 14:30 UTC');
+const SUB_EVENT_DETAILS_3 = new SubEventDetails();
+SUB_EVENT_DETAILS_3.haveEvent = false;
+SUB_EVENT_DETAILS_3.address = 'The Marriot';
+SUB_EVENT_DETAILS_3.coordinates = [0, 0];
+SUB_EVENT_DETAILS_3.dateAndTime = new Date('2019-06-10 19:30 UTC');
+
 /**
  * The final arbiter of business logic and the handler of interactions with the storage engine.
  * @note Each method represents an action which can be done on the entities the content service
@@ -65,7 +81,7 @@ export class Repository {
         'content.events.subevent_details as event_subevent_details',
         'content.events.user_id as event_user_id',
         'content.events.time_created as event_time_created',
-        'content.events.time_last_updaated as event_time_last_updated'
+        'content.events.time_last_updated as event_time_last_updated'
     ];
 
     private readonly _conn: knex;
@@ -109,7 +125,11 @@ export class Repository {
                     .returning('id')
                     .insert({
                         'state': EventState.Created,
-                        'subevent_details': { 'details': [] },
+                        'subevent_details': {
+                            'details': this._subEventDetailsArrayMarshaller.pack(
+                                [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3]
+                            )
+                        },
                         'user_id': user.id,
                         'time_created': requestTime,
                         'time_last_updated': requestTime,
@@ -165,8 +185,10 @@ export class Repository {
         };
 
         if (updateEventRequest.hasOwnProperty('subEventDetails')) {
-            updateDict['subevent_details'] = this._subEventDetailsArrayMarshaller.pack(
-                updateEventRequest.subEventDetails as SubEventDetails[]);
+            updateDict['subevent_details'] = {
+                'details': this._subEventDetailsArrayMarshaller.pack(
+                    updateEventRequest.subEventDetails as SubEventDetails[])
+            };
         }
 
         let dbEvent: any | null = null;
@@ -188,7 +210,7 @@ export class Repository {
             }
 
             await trx
-                .from('content.events')
+                .from('content.event_events')
                 .insert({
                     'type': EventEventType.Updated,
                     'timestamp': requestTime,
@@ -263,7 +285,7 @@ export class Repository {
         event.id = dbEvent['event_id'];
         event.state = dbEvent['event_state'];
         event.subEventDetails = this._subEventDetailsArrayMarshaller.extract(
-            dbEvent['event_subevent_details']);
+            dbEvent['event_subevent_details']['details']);
         event.timeCreated = new Date(dbEvent['event_time_created']);
         event.timeLastUpdated = new Date(dbEvent['event_time_last_updated']);
         return event;

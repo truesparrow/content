@@ -21,7 +21,7 @@ ENV PORT 10000
 ENV DATABASE_URL postgresql://truesparrow:truesparrow@truesparrow-postgres:5432/truesparrow
 ENV DATABASE_MIGRATIONS_DIR /truesparrow/migrations
 ENV DATABASE_MIGRATIONS_TABLE migrations_content
-ENV ORIGIN http://localhost:10001
+ENV ORIGIN http://localhost:10002
 ENV CLIENTS http://localhost:10003,http://localhost:10004
 ENV IDENTITY_SERVICE_HOST truesparrow-identity:10000
 
