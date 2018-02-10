@@ -1,8 +1,8 @@
 /** Defines the PublicContentRouter and the PrivateContentRouter. */
 
 /** Imports. Also so typedoc works correctly. */
-import * as cookieParser from 'cookie-parser'
 import { wrap } from 'async-middleware'
+import * as cookieParser from 'cookie-parser'
 import * as compression from 'compression'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
