@@ -5,7 +5,13 @@ import * as knex from 'knex'
 import { Marshaller, MarshalFrom, ArrayOf } from 'raynor'
 
 import { startupMigration } from '@truesparrow/common-server-js'
-import { Event, EventState, SubEventDetails } from '@truesparrow/content-sdk-js'
+import {
+    Event,
+    EventState,
+    PictureSet,
+    PictureSetMarshaller,
+    SubEventDetails
+} from '@truesparrow/content-sdk-js'
 import { CreateEventRequest, UpdateEventRequest } from '@truesparrow/content-sdk-js/dtos'
 import { EventEventType } from '@truesparrow/content-sdk-js/events'
 import { User } from '@truesparrow/identity-sdk-js'
@@ -78,6 +84,7 @@ export class Repository {
     private static readonly _eventPrivateFields = [
         'content.events.id as event_id',
         'content.events.state as event_state',
+        'content.events.picture_set as event_picture_set',
         'content.events.subevent_details as event_subevent_details',
         'content.events.user_id as event_user_id',
         'content.events.time_created as event_time_created',
@@ -87,6 +94,7 @@ export class Repository {
     private readonly _conn: knex;
     private readonly _createEventRequestMarshaller: Marshaller<CreateEventRequest>;
     private readonly _updateEventRequestMarshaller: Marshaller<UpdateEventRequest>;
+    private readonly _pictureSetMarshaller: Marshaller<PictureSet>;
     private readonly _subEventDetailsArrayMarshaller: Marshaller<SubEventDetails[]>;
 
     /**
@@ -97,6 +105,7 @@ export class Repository {
         this._conn = conn;
         this._createEventRequestMarshaller = new (MarshalFrom(CreateEventRequest))();
         this._updateEventRequestMarshaller = new (MarshalFrom(UpdateEventRequest))();
+        this._pictureSetMarshaller = new PictureSetMarshaller();
         this._subEventDetailsArrayMarshaller = new (ArrayOf(MarshalFrom(SubEventDetails)))();
     }
 
@@ -118,6 +127,9 @@ export class Repository {
     async createEvent(user: User, createEventRequest: CreateEventRequest, requestTime: Date): Promise<Event> {
         let dbId: number = -1;
 
+        const pictureSet = new PictureSet();
+        pictureSet.pictures = [];
+
         try {
             await this._conn.transaction(async (trx) => {
                 const dbIds = await trx
@@ -125,6 +137,7 @@ export class Repository {
                     .returning('id')
                     .insert({
                         'state': EventState.Created,
+                        'picture_set': this._pictureSetMarshaller.pack(pictureSet),
                         'subevent_details': {
                             'details': this._subEventDetailsArrayMarshaller.pack(
                                 [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3]
@@ -158,7 +171,8 @@ export class Repository {
         const event = new Event();
         event.id = dbId;
         event.state = EventState.Active;
-        event.subEventDetails = [];
+        event.pictureSet = pictureSet;
+        event.subEventDetails = [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3];
         event.timeCreated = requestTime;
         event.timeLastUpdated = requestTime;
 
@@ -183,6 +197,10 @@ export class Repository {
         const updateDict: any = {
             'time_last_updated': requestTime
         };
+
+        if (updateEventRequest.hasOwnProperty('pictureSet')) {
+            updateDict['picture_set'] = this._pictureSetMarshaller.pack(updateEventRequest.pictureSet as PictureSet);
+        }
 
         if (updateEventRequest.hasOwnProperty('subEventDetails')) {
             updateDict['subevent_details'] = {
@@ -284,6 +302,7 @@ export class Repository {
         const event = new Event();
         event.id = dbEvent['event_id'];
         event.state = dbEvent['event_state'];
+        event.pictureSet = this._pictureSetMarshaller.extract(dbEvent['picture_set']);
         event.subEventDetails = this._subEventDetailsArrayMarshaller.extract(
             dbEvent['event_subevent_details']['details']);
         event.timeCreated = new Date(dbEvent['event_time_created']);
