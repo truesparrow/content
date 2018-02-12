@@ -171,6 +171,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
         try {
             updateEventRequest = updateEventRequestMarshaller.extract(req.body);
         } catch (e) {
+            console.log(e);
             req.log.warn('Could not decode update request');
             res.status(HttpStatus.BAD_REQUEST);
             res.end();

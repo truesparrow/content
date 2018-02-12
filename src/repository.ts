@@ -302,7 +302,7 @@ export class Repository {
         const event = new Event();
         event.id = dbEvent['event_id'];
         event.state = dbEvent['event_state'];
-        event.pictureSet = this._pictureSetMarshaller.extract(dbEvent['picture_set']);
+        event.pictureSet = this._pictureSetMarshaller.extract(dbEvent['event_picture_set']);
         event.subEventDetails = this._subEventDetailsArrayMarshaller.extract(
             dbEvent['event_subevent_details']['details']);
         event.timeCreated = new Date(dbEvent['event_time_created']);
