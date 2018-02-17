@@ -344,6 +344,20 @@ export class Repository {
         return this._dbEventToEvent(dbEvent);
     }
 
+    /**
+     * Check whether a subdomain is available for an event or not.
+     * @param subDomain - the domain to check.
+     * @return Whether the domain is available for grabs ornot.
+     */
+    async checkSubDomainAvailable(subDomain: string): Promise<boolean> {
+        const dbSubDomains = await this._conn('content.event_sudomains')
+            .select(['id'])
+            .where({ subdomain: this._subDomainMarshaller.pack(subDomain), state: 'active' })
+            .limit(1);
+
+        return dbSubDomains.length == 0;
+    }
+
     private _dbEventToEvent(dbEvent: any): Event {
         const event = new Event();
         event.id = dbEvent['event_id'];

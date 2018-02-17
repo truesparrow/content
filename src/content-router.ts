@@ -23,7 +23,11 @@ import {
     SessionLevel
 } from '@truesparrow/identity-sdk-js/server'
 import {
+    SubDomainMarshaller
+} from '@truesparrow/content-sdk-js'
+import {
     CreateEventRequest,
+    CheckSubDomainAvailableResponse,
     PrivateEventResponse,
     PrivateEventResponseMarshaller,
     UpdateEventRequest
@@ -103,7 +107,8 @@ export function newPublicContentRouter(config: AppConfig, _repository: Repositor
  * {@link Repository}.
  * @note This is meant to be mounted by an express application.
  * @note The router has the following paths exposed:
- *    @path /hello GET
+ *    @path /events POST, PUT, GET
+ *    @path /check-subdomain-available
  * @param config - the application configuration.
  * @param repository - a repository.
  * @param identityClient - a client for the identity service.
@@ -112,7 +117,9 @@ export function newPublicContentRouter(config: AppConfig, _repository: Repositor
 export function newPrivateContentRouter(config: AppConfig, repository: Repository, identityClient: IdentityClient): express.Router {
     const createEventRequestMarshaller = new (MarshalFrom(CreateEventRequest))();
     const updateEventRequestMarshaller = new (MarshalFrom(UpdateEventRequest))();
+    const subDomainMarshaller = new SubDomainMarshaller();
     const privateEventResponseMarshaller = new PrivateEventResponseMarshaller();
+    const checkSubDomainAvailableResponseMarshaller = new (MarshalFrom(CheckSubDomainAvailableResponse))();
 
     const privateContentRouter = express.Router();
 
@@ -246,6 +253,35 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
                 return;
             }
 
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
+    }));
+
+    privateContentRouter.get('/check-subdomain-available', wrap(async (req: RequestWithIdentity, res: express.Response) => {
+        let subDomain: string | null = null;
+        try {
+            subDomain = subDomainMarshaller.extract(req.query.subDomain);
+        } catch (e) {
+            console.log(e);
+            req.log.warn('Could not decode subdomain parameter');
+            res.status(HttpStatus.BAD_REQUEST);
+            res.end();
+            return;
+        }
+
+        try {
+            const available = await repository.checkSubDomainAvailable(subDomain);
+
+            const checkSubDomainAvailableResponse = new CheckSubDomainAvailableResponse();
+            checkSubDomainAvailableResponse.available = available;
+
+            res.write(JSON.stringify(checkSubDomainAvailableResponseMarshaller.pack(checkSubDomainAvailableResponse)));
+            res.status(HttpStatus.OK);
+            res.end();
+        } catch (e) {
             req.log.error(e);
             req.errorLog.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
