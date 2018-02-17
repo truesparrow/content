@@ -12,7 +12,8 @@ exports.up = (knex, Promise) => knex.schema.raw(`
         -- Denormalized data
         time_created Timestamp NOT NULL,
         time_last_updated Timestamp NOT NULL,
-        time_removed Timestamp NULL
+        time_removed Timestamp NULL,
+        current_active_subdomain varchar(64) NULL,
     );
 
     CREATE UNIQUE INDEX events_user_id ON content.events(user_id);
