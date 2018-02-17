@@ -111,7 +111,12 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_repository_.repository.html#checksubdomainavailable" class="tsd-kind-icon">check<wbr>Sub<wbr>Domain<wbr>Available</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_repository_.repository.html#createevent" class="tsd-kind-icon">create<wbr>Event</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_repository_.repository.html#geteventbysubdomain" class="tsd-kind-icon">get<wbr>Event<wbr>BySub<wbr>Domain</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_repository_.repository.html#geteventbyuser" class="tsd-kind-icon">get<wbr>Event<wbr>ByUser</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_repository_.repository.html#init" class="tsd-kind-icon">init</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_repository_.repository.html#updateevent" class="tsd-kind-icon">update<wbr>Event</a></li>
 							</ul>
 						</section>
 					</div>
@@ -129,7 +134,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in repository.ts:21</li>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L110">repository.ts:110</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -156,6 +161,176 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="checksubdomainavailable" class="tsd-anchor"></a>
+					<h3>check<wbr>Sub<wbr>Domain<wbr>Available</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Sub<wbr>Domain<wbr>Available<span class="tsd-signature-symbol">(</span>subDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L388">repository.ts:388</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check whether a subdomain is available for an event or not.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>subDomain: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the domain to check.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>Whether the domain is available for grabs ornot.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="createevent" class="tsd-anchor"></a>
+					<h3>create<wbr>Event</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Event<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">User</span>, createEventRequest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CreateEventRequest</span>, requestTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L140">repository.ts:140</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create an event for the given user. The resulting event will be in the {@link EventState.Created} state.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>If the event already exists throws <a href="_repository_.eventalreadyexistserror.html">EventAlreadyExistsError</a>.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>user: <span class="tsd-signature-type">User</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the user for which the event is created.</p>
+									</div>
+								</li>
+								<li>
+									<h5>createEventRequest: <span class="tsd-signature-type">CreateEventRequest</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>details about the event to be created.</p>
+									</div>
+								</li>
+								<li>
+									<h5>requestTime: <span class="tsd-signature-type">Date</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the time at which the request was issued to the service. Used to
+										populate various &quot;modified_at&quot; fields.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The representation of the newly created event.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="geteventbysubdomain" class="tsd-anchor"></a>
+					<h3>get<wbr>Event<wbr>BySub<wbr>Domain</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Event<wbr>BySub<wbr>Domain<span class="tsd-signature-symbol">(</span>subDomain<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L360">repository.ts:360</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieve the event with a given active subdomain.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>note</dt>
+									<dd><p>Usually there&#39;s a single subdomain associated with an event and the event can be looked
+											up there. But sometimes there&#39;s two or more, when the user changes the subdomain. There&#39;s a
+											propagation delay in DNS, and in order to make sure the event is available, both (or more)
+											subdomains will be kept active until we know to deactivate them. At no point should there
+										be no subdomains active however.</p>
+									</dd>
+									<dt>note</dt>
+									<dd><p>This does not indicate whether an event has been removed or not,
+										like <a href="_repository_.repository.html#geteventbyuser">Repository.getEventByUser</a>.</p>
+									</dd>
+									<dt>throws</dt>
+									<dd><p>If the event does not exist for the subdomain, this will raise <a href="_repository_.eventnotfounderror.html">EventNotFoundError</a>.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>subDomain: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The subdomain to search for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The representation of the event.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="geteventbyuser" class="tsd-anchor"></a>
+					<h3>get<wbr>Event<wbr>ByUser</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Event<wbr>ByUser<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">User</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L328">repository.ts:328</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieve the event attached to the user.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>If the event does not exist for the user, this will raise <a href="_repository_.eventnotfounderror.html">EventNotFoundError</a>.</p>
+									</dd>
+									<dt>throws</dt>
+									<dd><p>If the event has been removed, this will raise <a href="_repository_.eventremovederror.html">EventRemovedError</a>.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>user: <span class="tsd-signature-type">User</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The user for which the event should be retrieved.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The representation of the event.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="init" class="tsd-anchor"></a>
 					<h3>init</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -165,7 +340,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in repository.ts:32</li>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L126">repository.ts:126</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -174,6 +349,61 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="updateevent" class="tsd-anchor"></a>
+					<h3>update<wbr>Event</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Event<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">User</span>, updateEventRequest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateEventRequest</span>, requestTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L217">repository.ts:217</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Update the event with new properties. If the event is currently in the
+										{@link EventState.Created} state, and the new properties are such that it can be considered
+									{@link EventState.Active}, then that transition is taken care of as well.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>If the event does not exist for the user, this will raise <a href="_repository_.eventnotfounderror.html">EventNotFoundError</a>.</p>
+									</dd>
+									<dt>throws</dt>
+									<dd><p>If the event has been removed, this will raise <a href="_repository_.eventremovederror.html">EventRemovedError</a>.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>user: <span class="tsd-signature-type">User</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the user for which the event is updated.</p>
+									</div>
+								</li>
+								<li>
+									<h5>updateEventRequest: <span class="tsd-signature-type">UpdateEventRequest</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>details about the properties to update.</p>
+									</div>
+								</li>
+								<li>
+									<h5>requestTime: <span class="tsd-signature-type">Date</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the time at which the request was issued to the service. Used to
+										populate various &quot;modified_at&quot; fields.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The representation of the updated event.</p>
 						</li>
 					</ul>
 				</section>
@@ -201,6 +431,15 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.eventalreadyexistserror.html" class="tsd-kind-icon">Event<wbr>Already<wbr>Exists<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.eventnotfounderror.html" class="tsd-kind-icon">Event<wbr>Not<wbr>Found<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.eventremovederror.html" class="tsd-kind-icon">Event<wbr>Removed<wbr>Error</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-external-module">
@@ -210,12 +449,42 @@
 								<a href="_repository_.repository.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_repository_.repository.html#checksubdomainavailable" class="tsd-kind-icon">check<wbr>Sub<wbr>Domain<wbr>Available</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_repository_.repository.html#createevent" class="tsd-kind-icon">create<wbr>Event</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_repository_.repository.html#geteventbysubdomain" class="tsd-kind-icon">get<wbr>Event<wbr>BySub<wbr>Domain</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_repository_.repository.html#geteventbyuser" class="tsd-kind-icon">get<wbr>Event<wbr>ByUser</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_repository_.repository.html#init" class="tsd-kind-icon">init</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_repository_.repository.html#updateevent" class="tsd-kind-icon">update<wbr>Event</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.repositoryerror.html" class="tsd-kind-icon">Repository<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.subdomaininuseerror.html" class="tsd-kind-icon">Sub<wbr>Domain<wbr>InUse<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_repository_.html#sub_event_details_1" class="tsd-kind-icon">SUB_<wbr>EVENT_<wbr>DETAILS_<wbr>1</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_repository_.html#sub_event_details_2" class="tsd-kind-icon">SUB_<wbr>EVENT_<wbr>DETAILS_<wbr>2</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_repository_.html#sub_event_details_3" class="tsd-kind-icon">SUB_<wbr>EVENT_<wbr>DETAILS_<wbr>3</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

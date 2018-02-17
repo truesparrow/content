@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;content-router&quot; | content</title>
+	<title>EventAlreadyExistsError | content</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_content_router_.html">&quot;content-router&quot;</a>
+					<a href="../modules/_repository_.html">&quot;repository&quot;</a>
+				</li>
+				<li>
+					<a href="_repository_.eventalreadyexistserror.html">EventAlreadyExistsError</a>
 				</li>
 			</ul>
-			<h1>External module &quot;content-router&quot;</h1>
+			<h1>Class EventAlreadyExistsError</h1>
 		</div>
 	</div>
 </header>
@@ -69,141 +72,106 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Defines the PublicContentRouter and the PrivateContentRouter.</p>
+						<p>Error raised when an event already exists, though it should not.</p>
 					</div>
 				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="_repository_.repositoryerror.html" class="tsd-signature-type">RepositoryError</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">EventAlreadyExistsError</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Interfaces</h3>
+							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_content_router_.appconfig.html" class="tsd-kind-icon">App<wbr>Config</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="_repository_.eventalreadyexistserror.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
-							<h3>Functions</h3>
+						<section class="tsd-index-section tsd-is-inherited">
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_content_router_.html#newprivatecontentrouter" class="tsd-kind-icon">new<wbr>Private<wbr>Content<wbr>Router</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_content_router_.html#newpubliccontentrouter" class="tsd-kind-icon">new<wbr>Public<wbr>Content<wbr>Router</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="_repository_.eventalreadyexistserror.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="_repository_.eventalreadyexistserror.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-static"><a href="_repository_.eventalreadyexistserror.html#stack" class="tsd-kind-icon">stack</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
-					<a name="newprivatecontentrouter" class="tsd-anchor"></a>
-					<h3>new<wbr>Private<wbr>Content<wbr>Router</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">new<wbr>Private<wbr>Content<wbr>Router<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../interfaces/_content_router_.appconfig.html" class="tsd-signature-type">AppConfig</a>, repository<span class="tsd-signature-symbol">: </span><a href="../classes/_repository_.repository.html" class="tsd-signature-type">Repository</a>, identityClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IdentityClient</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Router</span></li>
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Event<wbr>Already<wbr>Exists<wbr>Error<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_repository_.eventalreadyexistserror.html" class="tsd-signature-type">EventAlreadyExistsError</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Overrides <a href="_repository_.repositoryerror.html">RepositoryError</a>.<a href="_repository_.repositoryerror.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/content-router.ts#L151">content-router.ts:151</a></li>
+									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/repository.ts#L50">repository.ts:50</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Construct an PrivateContentRouter. This is an full formed and independent {@link express.Router}
-										which implements the HTTP API for the private parts of the content service. It makes the
-										connection between clients, external services and the business logic encapsulated in the
-									<a href="../classes/_repository_.repository.html">Repository</a>.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>note</dt>
-									<dd><p>This is meant to be mounted by an express application.</p>
-									</dd>
-									<dt>note</dt>
-									<dd><p>The router has the following paths exposed:
-											@path /events POST, PUT, GET
-										@path /check-subdomain-available?subdomain</p>
-									</dd>
-								</dl>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>config: <a href="../interfaces/_content_router_.appconfig.html" class="tsd-signature-type">AppConfig</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>the application configuration.</p>
-									</div>
-								</li>
-								<li>
-									<h5>repository: <a href="../classes/_repository_.repository.html" class="tsd-signature-type">Repository</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a repository.</p>
-									</div>
-								</li>
-								<li>
-									<h5>identityClient: <span class="tsd-signature-type">IdentityClient</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a client for the identity service.</p>
-									</div>
+									<h5>message: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">express.Router</span></h4>
-							<p>An {@link express.Router} doing all of the above.</p>
+							<h4 class="tsd-returns-title">Returns <a href="_repository_.eventalreadyexistserror.html" class="tsd-signature-type">EventAlreadyExistsError</a></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
-					<a name="newpubliccontentrouter" class="tsd-anchor"></a>
-					<h3>new<wbr>Public<wbr>Content<wbr>Router</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">new<wbr>Public<wbr>Content<wbr>Router<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../interfaces/_content_router_.appconfig.html" class="tsd-signature-type">AppConfig</a>, repository<span class="tsd-signature-symbol">: </span><a href="../classes/_repository_.repository.html" class="tsd-signature-type">Repository</a>, identityClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IdentityClient</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Router</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/truesparrow/content/blob/7061245/src/content-router.ts#L77">content-router.ts:77</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Construct an PublicContentRouter. This is an full formed and independent {@link express.Router}
-										which implements the HTTP API for the public parts of the contente service. It makes the
-										connection between clients, external services and the business logic encapsulated in the
-									<a href="../classes/_repository_.repository.html">Repository</a>.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>note</dt>
-									<dd><p>This is meant to be mounted by an express application.</p>
-									</dd>
-									<dt>note</dt>
-									<dd><p>The router has the following paths exposed:
-										@path /events?subdomain GET</p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>config: <a href="../interfaces/_content_router_.appconfig.html" class="tsd-signature-type">AppConfig</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>the application configuration.</p>
-									</div>
-								</li>
-								<li>
-									<h5>repository: <a href="../classes/_repository_.repository.html" class="tsd-signature-type">Repository</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a repository.</p>
-									</div>
-								</li>
-								<li>
-									<h5>identityClient: <span class="tsd-signature-type">IdentityClient</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">express.Router</span></h4>
-							<p>An {@link express.Router} doing all of the above.</p>
-						</li>
-					</ul>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="message" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> message</h3>
+					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from Error.message</p>
+						<ul>
+							<li>Defined in /Users/Horia/WorkA/truesparrow/content/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:874</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="name" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from Error.name</p>
+						<ul>
+							<li>Defined in /Users/Horia/WorkA/truesparrow/content/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:873</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-static">
+					<a name="stack" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagOptional">Optional</span> stack</h3>
+					<div class="tsd-signature tsd-kind-icon">stack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from Error.stack</p>
+						<p>Overrides Error.stack</p>
+						<ul>
+							<li>Defined in /Users/Horia/WorkA/truesparrow/content/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:875</li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -214,29 +182,65 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_config_.html">"config"</a>
+						<a href="../modules/_config_.html">"config"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_content_router_.html">"content-<wbr>router"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_index_.html">"index"</a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="_content_router_.html">"content-<wbr>router"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_index_.html">"index"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_repository_.html">"repository"</a>
+						<a href="../modules/_repository_.html">"repository"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="../interfaces/_content_router_.appconfig.html" class="tsd-kind-icon">App<wbr>Config</a>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.eventalreadyexistserror.html" class="tsd-kind-icon">Event<wbr>Already<wbr>Exists<wbr>Error</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="_repository_.eventalreadyexistserror.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="_repository_.eventalreadyexistserror.html#message" class="tsd-kind-icon">message</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="_repository_.eventalreadyexistserror.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-static">
+								<a href="_repository_.eventalreadyexistserror.html#stack" class="tsd-kind-icon">stack</a>
+							</li>
+						</ul>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="_content_router_.html#newprivatecontentrouter" class="tsd-kind-icon">new<wbr>Private<wbr>Content<wbr>Router</a>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.eventnotfounderror.html" class="tsd-kind-icon">Event<wbr>Not<wbr>Found<wbr>Error</a>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="_content_router_.html#newpubliccontentrouter" class="tsd-kind-icon">new<wbr>Public<wbr>Content<wbr>Router</a>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.eventremovederror.html" class="tsd-kind-icon">Event<wbr>Removed<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.repository.html" class="tsd-kind-icon">Repository</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.repositoryerror.html" class="tsd-kind-icon">Repository<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_repository_.subdomaininuseerror.html" class="tsd-kind-icon">Sub<wbr>Domain<wbr>InUse<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_repository_.html#sub_event_details_1" class="tsd-kind-icon">SUB_<wbr>EVENT_<wbr>DETAILS_<wbr>1</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_repository_.html#sub_event_details_2" class="tsd-kind-icon">SUB_<wbr>EVENT_<wbr>DETAILS_<wbr>2</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_repository_.html#sub_event_details_3" class="tsd-kind-icon">SUB_<wbr>EVENT_<wbr>DETAILS_<wbr>3</a>
 					</li>
 				</ul>
 			</nav>
