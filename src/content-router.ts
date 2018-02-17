@@ -227,7 +227,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
 
     privateContentRouter.get('/events', wrap(async (req: RequestWithIdentity, res: express.Response) => {
         try {
-            const event = await repository.getEvent(req.session.user as User);
+            const event = await repository.getEventByUser(req.session.user as User);
 
             const privateEventResponse = new PrivateEventResponse();
             privateEventResponse.eventIsRemoved = false;

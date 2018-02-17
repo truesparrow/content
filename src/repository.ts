@@ -325,7 +325,7 @@ export class Repository {
      * @throws If the event does not exist for the user, this will raise {@link EventNotFoundError}.
      * @throws If the event has been removed, this will raise {@link EventRemovedError}.
      */
-    async getEvent(user: User): Promise<Event> {
+    async getEventByUser(user: User): Promise<Event> {
         const dbEvents = await this._conn('content.events')
             .select(Repository._eventPrivateFields)
             .where({ user_id: user.id })
