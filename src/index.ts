@@ -33,7 +33,7 @@ async function main() {
         rollbarToken: config.ROLLBAR_TOKEN
     };
 
-    const publicContentRouter = newPublicContentRouter(appConfig, repository);
+    const publicContentRouter = newPublicContentRouter(appConfig, repository, identityClient);
     const privateContentRouter = newPrivateContentRouter(appConfig, repository, identityClient);
 
     console.log('Starting up');

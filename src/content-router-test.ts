@@ -33,18 +33,21 @@ describe('PublicContentRouter', () => {
     const repository = td.object({
     });
 
+    const identityClient = td.object({
+    });
+
     afterEach('reset test doubles', () => {
         td.reset();
     });
 
     it('can be constructed', () => {
-        const identityRouter = newPublicContentRouter(localAppConfig, repository as Repository);
+        const identityRouter = newPublicContentRouter(localAppConfig, repository as Repository, identityClient as IdentityClient);
 
         expect(identityRouter).is.not.null;
     });
 
     it('can be constructed with prod settings', () => {
-        const identityRouter = newPublicContentRouter(stagingAppConfig, repository as Repository);
+        const identityRouter = newPublicContentRouter(stagingAppConfig, repository as Repository, identityClient as IdentityClient);
 
         expect(identityRouter).is.not.null;
     });

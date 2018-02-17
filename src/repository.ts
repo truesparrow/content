@@ -345,6 +345,42 @@ export class Repository {
     }
 
     /**
+     * Retrieve the event with a given active subdomain.
+     * @note Usually there's a single subdomain associated with an event and the event can be looked
+     * up there. But sometimes there's two or more, when the user changes the subdomain. There's a
+     * propagation delay in DNS, and in order to make sure the event is available, both (or more)
+     * subdomains will be kept active until we know to deactivate them. At no point should there
+     * be no subdomains active however.
+     * @note This does not indicate whether an event has been removed or not,
+     * like {@link Repository.getEventByUser}.
+     * @param subDomain - The subdomain to search for.
+     * @return The representation of the event.
+     * @throws If the event does not exist for the subdomain, this will raise {@link EventNotFoundError}.
+     */
+    async getEventBySubDomain(subDomain: string): Promise<Event> {
+        const dbEvents = await this._conn('content.event_subdomains')
+            .join('content.events', 'content.events.id', '=', 'content.event_subdomains.event_id')
+            .where({
+                'content.event_subdomains.subdomain': this._subDomainMarshaller.pack(subDomain),
+                state: 'active'
+            })
+            .select(Repository._eventPrivateFields)
+            .limit(1);
+
+        if (dbEvents.length == 0) {
+            throw new EventNotFoundError('Event does not exist');
+        }
+
+        const dbEvent = dbEvents[0];
+
+        if (dbEvent['event_state'] == EventState.Removed) {
+            throw new EventRemovedError('Event exists but is removed');
+        }
+
+        return this._dbEventToEvent(dbEvent);
+    }
+
+    /**
      * Check whether a subdomain is available for an event or not.
      * @param subDomain - the domain to check.
      * @return Whether the domain is available for grabs ornot.

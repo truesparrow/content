@@ -30,6 +30,7 @@ import {
     CheckSubDomainAvailableResponse,
     PrivateEventResponse,
     PrivateEventResponseMarshaller,
+    PublicEventResponse,
     UpdateEventRequest
 } from '@truesparrow/content-sdk-js/dtos'
 
@@ -68,12 +69,15 @@ export interface AppConfig {
  * {@link Repository}.
  * @note This is meant to be mounted by an express application.
  * @note The router has the following paths exposed:
- *    @path /hello GET
+ *    @path /events?subdomain GET
  * @param config - the application configuration.
  * @param repository - a repository.
  * @return An {@link express.Router} doing all of the above.
  */
-export function newPublicContentRouter(config: AppConfig, _repository: Repository): express.Router {
+export function newPublicContentRouter(config: AppConfig, repository: Repository, identityClient: IdentityClient): express.Router {
+    const subDomainMarshaller = new SubDomainMarshaller();
+    const publicEventResponseMarshaller = new (MarshalFrom(PublicEventResponse))();
+
     const publicContentRouter = express.Router();
 
     publicContentRouter.use(cookieParser());
@@ -89,11 +93,41 @@ export function newPublicContentRouter(config: AppConfig, _repository: Repositor
     }
     publicContentRouter.use(compression({ threshold: 0 }));
     publicContentRouter.use(newCommonApiServerMiddleware(config.clients));
+    publicContentRouter.use(newSessionMiddleware(SessionLevel.Session, SessionInfoSource.Header, config.env, identityClient));
 
-    publicContentRouter.get('/hello', wrap(async (_req: Request, res: express.Response) => {
-        res.status(HttpStatus.OK);
-        res.write(JSON.stringify({ hello: "world" }));
-        res.end();
+    publicContentRouter.get('/events', wrap(async (req: Request, res: express.Response) => {
+        let subDomain: string | null = null;
+        try {
+            subDomain = subDomainMarshaller.extract(req.query.subdomain);
+        } catch (e) {
+            console.log(e);
+            req.log.warn('Could not decode subdomain parameter');
+            res.status(HttpStatus.BAD_REQUEST);
+            res.end();
+            return;
+        }
+
+        try {
+            const event = await repository.getEventBySubDomain(subDomain);
+
+            const publicEventResponse = new PublicEventResponse();
+            publicEventResponse.event = event;
+
+            res.write(JSON.stringify(publicEventResponseMarshaller.pack(publicEventResponse)));
+            res.status(HttpStatus.OK);
+            res.end();
+        } catch (e) {
+            if (e.name == 'EventNotFoundError') {
+                res.status(HttpStatus.NOT_FOUND);
+                res.end();
+                return;
+            }
+
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
     }));
 
     return publicContentRouter;
@@ -108,7 +142,7 @@ export function newPublicContentRouter(config: AppConfig, _repository: Repositor
  * @note This is meant to be mounted by an express application.
  * @note The router has the following paths exposed:
  *    @path /events POST, PUT, GET
- *    @path /check-subdomain-available
+ *    @path /check-subdomain-available?subdomain
  * @param config - the application configuration.
  * @param repository - a repository.
  * @param identityClient - a client for the identity service.
@@ -263,7 +297,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
     privateContentRouter.get('/check-subdomain-available', wrap(async (req: RequestWithIdentity, res: express.Response) => {
         let subDomain: string | null = null;
         try {
-            subDomain = subDomainMarshaller.extract(req.query.subDomain);
+            subDomain = subDomainMarshaller.extract(req.query.subdomain);
         } catch (e) {
             console.log(e);
             req.log.warn('Could not decode subdomain parameter');
