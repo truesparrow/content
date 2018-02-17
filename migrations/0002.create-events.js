@@ -13,7 +13,7 @@ exports.up = (knex, Promise) => knex.schema.raw(`
         time_created Timestamp NOT NULL,
         time_last_updated Timestamp NOT NULL,
         time_removed Timestamp NULL,
-        current_active_subdomain varchar(64) NULL,
+        current_active_subdomain varchar(64) NOT NULL,
     );
 
     CREATE UNIQUE INDEX events_user_id ON content.events(user_id);

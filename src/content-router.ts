@@ -205,6 +205,12 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
                 return;
             }
 
+            if (e.name == 'SubDomainInUseError') {
+                res.status(HttpStatus.CONFLICT);
+                res.end();
+                return;
+            }
+
             req.log.error(e);
             req.errorLog.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
