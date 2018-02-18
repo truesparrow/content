@@ -183,7 +183,8 @@ export class Repository {
                     });
             });
         } catch (e) {
-            if (e.detail.match(/^Key [(]user_id[)]=[(]\d+[)] already exists.$/) != null) {
+            if (e.hasOwnProperty('detail') &&
+                e.detail.match(/^Key [(]user_id[)]=[(]\d+[)] already exists.$/) != null) {
                 throw new EventAlreadyExistsError('Event already exists for user');
             }
 
@@ -308,7 +309,8 @@ export class Repository {
                 }
             });
         } catch (e) {
-            if (e.detail.match(/^Key [(]subdomain[)]=[(][a-z0-9]+[)] already exists.$/) != null) {
+            if (e.hasOwnProperty('detail') &&
+                e.detail.match(/^Key [(]subdomain[)]=[(][a-z0-9]+[)] already exists.$/) != null) {
                 throw new SubDomainInUseError('Subdomain is already in use');
             }
 
