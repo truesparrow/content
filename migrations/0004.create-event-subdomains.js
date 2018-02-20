@@ -9,8 +9,10 @@ exports.up = (knex, Promise) => knex.schema.raw(`
         -- Core properties
         state content.event_subdomain_state NOT NULL,
         subdomain varchar(64) NOT NULL,
+        -- Foreign keys
+        event_id Int NOT NULL REFERENCES content.events(id),
         -- Foreign key to external systems
-        event_id Int NOT NULL REFERENCES content.events(id)
+        user_id Int NOT NULL
     );
 
     CREATE INDEX event_subdomains_subdomain
@@ -21,6 +23,6 @@ exports.up = (knex, Promise) => knex.schema.raw(`
 `);
 
 exports.down = (knex, Promise) => knex.schema.raw(`
-    DROP INDEX IF EXISTS content.event_subdomains;
+    DROP TABLE IF EXISTS content.event_subdomains;
     DROP TYPE IF EXISTS content.event_subdomain_state;
 `);

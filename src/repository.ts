@@ -170,7 +170,8 @@ export class Repository {
                     .insert({
                         'state': 'active',
                         'subdomain': initialSubDomain,
-                        'event_id': dbId
+                        'event_id': dbId,
+                        'user_id': user.id
                     });
 
                 await trx
@@ -258,13 +259,30 @@ export class Repository {
                 }
 
                 if (updateDict.hasOwnProperty('current_active_subdomain')) {
-                    await trx
+                    console.log('here');
+                    const dbSubDomains = await trx
                         .from('content.event_subdomains')
-                        .insert({
-                            'state': 'active',
-                            'subdomain': updateDict['current_active_subdomain'],
-                            'event_id': dbEvent['event_id']
-                        });
+                        .select(['id', 'user_id'])
+                        .where({ subdomain: updateDict['current_active_subdomain'], state: 'active' })
+                        .limit(1);
+
+                    console.log(dbSubDomains);
+                    if (dbSubDomains.length > 0 && dbSubDomains[0]['user_id'] != user.id) {
+                        // If somebody else is using this subdomain, we bail.
+                        throw new SubDomainInUseError('Subdomain is already in use by another user');
+                    } else if (dbSubDomains.length > 0) {
+                        // We're using this active subdomain. Nothing to see here yet.
+                    } else {
+                        // If nobody else is using this subdomain, not even us, we mark this.
+                        await trx
+                            .from('content.event_subdomains')
+                            .insert({
+                                'state': 'active',
+                                'subdomain': updateDict['current_active_subdomain'],
+                                'event_id': dbEvent['event_id'],
+                                'user_id': user.id
+                            });
+                    }
                 }
 
                 await trx
@@ -311,7 +329,7 @@ export class Repository {
         } catch (e) {
             if (e.hasOwnProperty('detail') &&
                 e.detail.match(/^Key [(]subdomain[)]=[(][a-z0-9]+[)] already exists.$/) != null) {
-                throw new SubDomainInUseError('Subdomain is already in use');
+                throw new SubDomainInUseError('Subdomain is already in use by another user');
             }
 
             throw e;
@@ -383,14 +401,18 @@ export class Repository {
     }
 
     /**
-     * Check whether a subdomain is available for an event or not.
+     * Check whether a subdomain is available for an event or not. Any of the active subdomains
+     * of the current user are considered to be used, but none of the others.
+     * @note There's a strong assumption that each user has at most one event.
+     * @param user - the user making the request.
      * @param subDomain - the domain to check.
      * @return Whether the domain is available for grabs ornot.
      */
-    async checkSubDomainAvailable(subDomain: string): Promise<boolean> {
-        const dbSubDomains = await this._conn('content.event_sudomains')
+    async checkSubDomainAvailable(user: User, subDomain: string): Promise<boolean> {
+        const dbSubDomains = await this._conn('content.event_subdomains')
             .select(['id'])
             .where({ subdomain: this._subDomainMarshaller.pack(subDomain), state: 'active' })
+            .andWhereNot('user_id', '=', user.id)
             .limit(1);
 
         return dbSubDomains.length == 0;

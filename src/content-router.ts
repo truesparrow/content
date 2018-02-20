@@ -108,7 +108,7 @@ export function newPublicContentRouter(config: AppConfig, repository: Repository
         }
 
         try {
-            const event = await repository.getEventBySubDomain(subDomain);
+            const event = await repository.getEventBySubDomain(subDomain as string);
 
             const publicEventResponse = new PublicEventResponse();
             publicEventResponse.event = event;
@@ -307,7 +307,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
         }
 
         try {
-            const available = await repository.checkSubDomainAvailable(subDomain);
+            const available = await repository.checkSubDomainAvailable(req.session.user as User, subDomain as string);
 
             const checkSubDomainAvailableResponse = new CheckSubDomainAvailableResponse();
             checkSubDomainAvailableResponse.available = available;
