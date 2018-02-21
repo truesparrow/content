@@ -382,7 +382,7 @@ export class Repository {
             .join('content.events', 'content.events.id', '=', 'content.event_subdomains.event_id')
             .where({
                 'content.event_subdomains.subdomain': this._subDomainMarshaller.pack(subDomain),
-                state: 'active'
+                'content.event_subdomains.state': 'active'
             })
             .select(Repository._eventPrivateFields)
             .limit(1);
