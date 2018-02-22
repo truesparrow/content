@@ -65,16 +65,19 @@ export class SubDomainInUseError extends RepositoryError {
 
 const SUB_EVENT_DETAILS_1 = new SubEventDetails();
 SUB_EVENT_DETAILS_1.haveEvent = false;
+SUB_EVENT_DETAILS_1.slug = 'civil-ceremony';
 SUB_EVENT_DETAILS_1.address = 'The Marriot';
 SUB_EVENT_DETAILS_1.coordinates = [0, 0];
 SUB_EVENT_DETAILS_1.dateAndTime = new Date('2019-06-10 10:30 UTC');
 const SUB_EVENT_DETAILS_2 = new SubEventDetails();
 SUB_EVENT_DETAILS_2.haveEvent = false;
+SUB_EVENT_DETAILS_2.slug = 'religious-ceremony';
 SUB_EVENT_DETAILS_2.address = 'The Marriot';
 SUB_EVENT_DETAILS_2.coordinates = [0, 0];
 SUB_EVENT_DETAILS_2.dateAndTime = new Date('2019-06-10 14:30 UTC');
 const SUB_EVENT_DETAILS_3 = new SubEventDetails();
 SUB_EVENT_DETAILS_3.haveEvent = false;
+SUB_EVENT_DETAILS_3.slug = 'reception';
 SUB_EVENT_DETAILS_3.address = 'The Marriot';
 SUB_EVENT_DETAILS_3.coordinates = [0, 0];
 SUB_EVENT_DETAILS_3.dateAndTime = new Date('2019-06-10 19:30 UTC');
