@@ -373,6 +373,7 @@ export class Repository {
      * be no subdomains active however.
      * @note This does not indicate whether an event has been removed or not,
      * like {@link Repository.getEventByUser}.
+     * @note The event must be active for this to return.
      * @param subDomain - The subdomain to search for.
      * @return The representation of the event.
      * @throws If the event does not exist for the subdomain, this will raise {@link EventNotFoundError}.
@@ -393,8 +394,8 @@ export class Repository {
 
         const dbEvent = dbEvents[0];
 
-        if (dbEvent['event_state'] == EventState.Removed) {
-            throw new EventRemovedError('Event exists but is removed');
+        if (dbEvent['event_state'] != EventState.Active) {
+            throw new EventNotFoundError('Event exists but is not active');
         }
 
         return this._dbEventToEvent(dbEvent);

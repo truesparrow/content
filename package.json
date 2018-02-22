@@ -1,6 +1,6 @@
 {
     "name": "@truesparrow/content",
-    "version": "0.6.5",
+    "version": "0.6.6",
     "description": "The content service.",
     "author": "CHM SQRT2 Team",
     "scripts": {
