@@ -12,7 +12,8 @@ import {
     PictureSet,
     PictureSetMarshaller,
     SubDomainMarshaller,
-    SubEventDetails
+    SubEventDetails,
+    TitleMarshaller
 } from '@truesparrow/content-sdk-js'
 import { CreateEventRequest, UpdateEventRequest } from '@truesparrow/content-sdk-js/dtos'
 import { EventEventType } from '@truesparrow/content-sdk-js/events'
@@ -65,18 +66,30 @@ export class SubDomainInUseError extends RepositoryError {
 
 const SUB_EVENT_DETAILS_1 = new SubEventDetails();
 SUB_EVENT_DETAILS_1.haveEvent = false;
+SUB_EVENT_DETAILS_1.title = {
+    'en': 'Civil Ceremony',
+    'ro': 'Cununia Civilă'
+};
 SUB_EVENT_DETAILS_1.slug = 'civil-ceremony';
 SUB_EVENT_DETAILS_1.address = 'The Marriot';
 SUB_EVENT_DETAILS_1.coordinates = [0, 0];
 SUB_EVENT_DETAILS_1.dateAndTime = new Date('2019-06-10 10:30 UTC');
 const SUB_EVENT_DETAILS_2 = new SubEventDetails();
 SUB_EVENT_DETAILS_2.haveEvent = false;
+SUB_EVENT_DETAILS_2.title = {
+    'en': 'Religious Ceremony',
+    'ro': 'Cununia Religiosă'
+};
 SUB_EVENT_DETAILS_2.slug = 'religious-ceremony';
 SUB_EVENT_DETAILS_2.address = 'The Marriot';
 SUB_EVENT_DETAILS_2.coordinates = [0, 0];
 SUB_EVENT_DETAILS_2.dateAndTime = new Date('2019-06-10 14:30 UTC');
 const SUB_EVENT_DETAILS_3 = new SubEventDetails();
 SUB_EVENT_DETAILS_3.haveEvent = false;
+SUB_EVENT_DETAILS_2.title = {
+    'en': 'Reception',
+    'ro': 'Petrecerea'
+};
 SUB_EVENT_DETAILS_3.slug = 'reception';
 SUB_EVENT_DETAILS_3.address = 'The Marriot';
 SUB_EVENT_DETAILS_3.coordinates = [0, 0];
@@ -97,6 +110,7 @@ export class Repository {
     private static readonly _eventPrivateFields = [
         'content.events.id as event_id',
         'content.events.state as event_state',
+        'content.events.title as event_title',
         'content.events.picture_set as event_picture_set',
         'content.events.subevent_details as event_subevent_details',
         'content.events.user_id as event_user_id',
@@ -108,6 +122,7 @@ export class Repository {
     private readonly _conn: knex;
     private readonly _createEventRequestMarshaller: Marshaller<CreateEventRequest>;
     private readonly _updateEventRequestMarshaller: Marshaller<UpdateEventRequest>;
+    private readonly _titleMarshaller: TitleMarshaller;
     private readonly _pictureSetMarshaller: Marshaller<PictureSet>;
     private readonly _subEventDetailsArrayMarshaller: Marshaller<SubEventDetails[]>;
     private readonly _subDomainMarshaller: SubDomainMarshaller;
@@ -120,6 +135,7 @@ export class Repository {
         this._conn = conn;
         this._createEventRequestMarshaller = new (MarshalFrom(CreateEventRequest))();
         this._updateEventRequestMarshaller = new (MarshalFrom(UpdateEventRequest))();
+        this._titleMarshaller = new TitleMarshaller();
         this._pictureSetMarshaller = new PictureSetMarshaller();
         this._subEventDetailsArrayMarshaller = new (ArrayOf(MarshalFrom(SubEventDetails)))();
         this._subDomainMarshaller = new SubDomainMarshaller();
@@ -155,6 +171,7 @@ export class Repository {
                     .returning('id')
                     .insert({
                         'state': EventState.Created,
+                        'title': 'Default title',
                         'picture_set': this._pictureSetMarshaller.pack(initialPictureSet),
                         'subevent_details': {
                             'details': this._subEventDetailsArrayMarshaller.pack(initialSubEventDetails)
@@ -198,6 +215,7 @@ export class Repository {
         const event = new Event();
         event.id = dbId;
         event.state = EventState.Active;
+        event.title = 'Default title';
         event.pictureSet = initialPictureSet;
         event.subEventDetails = [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3];
         event.subDomain = initialSubDomain;
@@ -225,6 +243,10 @@ export class Repository {
         const updateDict: any = {
             'time_last_updated': requestTime
         };
+
+        if (updateEventRequest.hasOwnProperty('title')) {
+            updateDict['title'] = this._titleMarshaller.pack(updateEventRequest.title as string);
+        }
 
         if (updateEventRequest.hasOwnProperty('pictureSet')) {
             updateDict['picture_set'] = this._pictureSetMarshaller.pack(updateEventRequest.pictureSet as PictureSet);
@@ -426,6 +448,7 @@ export class Repository {
         const event = new Event();
         event.id = dbEvent['event_id'];
         event.state = dbEvent['event_state'];
+        event.title = this._titleMarshaller.extract(dbEvent['event_title']);
         event.pictureSet = this._pictureSetMarshaller.extract(dbEvent['event_picture_set']);
         event.subEventDetails = this._subEventDetailsArrayMarshaller.extract(
             dbEvent['event_subevent_details']['details']);

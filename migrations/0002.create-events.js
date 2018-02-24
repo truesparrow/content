@@ -5,6 +5,7 @@ exports.up = (knex, Promise) => knex.schema.raw(`
         PRIMARY KEY (id),
         -- Core properties
         state SmallInt NOT NULL,
+        title varchar(128) NOT NULL,
         picture_set Jsonb NOT NULL,
         subevent_details Jsonb NOT NULL,
         -- Foreign key to external systems
