@@ -86,7 +86,7 @@ SUB_EVENT_DETAILS_2.coordinates = [0, 0];
 SUB_EVENT_DETAILS_2.dateAndTime = new Date('2019-06-10 14:30 UTC');
 const SUB_EVENT_DETAILS_3 = new SubEventDetails();
 SUB_EVENT_DETAILS_3.haveEvent = false;
-SUB_EVENT_DETAILS_2.title = {
+SUB_EVENT_DETAILS_3.title = {
     'en': 'Reception',
     'ro': 'Petrecerea'
 };
@@ -336,6 +336,7 @@ export class Repository {
                             'data': null,
                             'event_id': event.id
                         });
+                    dbEvent['event_state'] = EventState.Active;
                 } else if (event.state == EventState.Active && !event.doesLookActive) {
                     await trx
                         .from('content.events')
@@ -349,6 +350,7 @@ export class Repository {
                             'data': null,
                             'event_id': event.id
                         });
+                    dbEvent['event_state'] = EventState.Created;
                 }
             });
         } catch (e) {
