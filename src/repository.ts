@@ -13,6 +13,7 @@ import {
     PictureSetMarshaller,
     SubDomainMarshaller,
     SubEventDetails,
+    SubEventDisplayInfo,
     TitleMarshaller
 } from '@truesparrow/content-sdk-js'
 import { CreateEventRequest, UpdateEventRequest } from '@truesparrow/content-sdk-js/dtos'
@@ -74,6 +75,9 @@ SUB_EVENT_DETAILS_1.slug = 'civil-ceremony';
 SUB_EVENT_DETAILS_1.address = 'The Marriot';
 SUB_EVENT_DETAILS_1.coordinates = [0, 0];
 SUB_EVENT_DETAILS_1.dateAndTime = new Date('2019-06-10 10:30 UTC');
+SUB_EVENT_DETAILS_1.display = new SubEventDisplayInfo();
+SUB_EVENT_DETAILS_1.display.icon = 'civil-ceremony';
+SUB_EVENT_DETAILS_1.display.color = '#666699';
 const SUB_EVENT_DETAILS_2 = new SubEventDetails();
 SUB_EVENT_DETAILS_2.haveEvent = false;
 SUB_EVENT_DETAILS_2.title = {
@@ -84,6 +88,9 @@ SUB_EVENT_DETAILS_2.slug = 'religious-ceremony';
 SUB_EVENT_DETAILS_2.address = 'The Marriot';
 SUB_EVENT_DETAILS_2.coordinates = [0, 0];
 SUB_EVENT_DETAILS_2.dateAndTime = new Date('2019-06-10 14:30 UTC');
+SUB_EVENT_DETAILS_2.display = new SubEventDisplayInfo();
+SUB_EVENT_DETAILS_2.display.icon = 'religious-ceremony';
+SUB_EVENT_DETAILS_2.display.color = '#FFCC00';
 const SUB_EVENT_DETAILS_3 = new SubEventDetails();
 SUB_EVENT_DETAILS_3.haveEvent = false;
 SUB_EVENT_DETAILS_3.title = {
@@ -94,6 +101,9 @@ SUB_EVENT_DETAILS_3.slug = 'reception';
 SUB_EVENT_DETAILS_3.address = 'The Marriot';
 SUB_EVENT_DETAILS_3.coordinates = [0, 0];
 SUB_EVENT_DETAILS_3.dateAndTime = new Date('2019-06-10 19:30 UTC');
+SUB_EVENT_DETAILS_3.display = new SubEventDisplayInfo();
+SUB_EVENT_DETAILS_3.display.icon = 'reception';
+SUB_EVENT_DETAILS_3.display.color = '#FF3333';
 
 /**
  * The final arbiter of business logic and the handler of interactions with the storage engine.
