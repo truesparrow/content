@@ -2,12 +2,13 @@ import * as express from 'express'
 import * as knex from 'knex'
 import 'log-timestamp'
 
-import { InternalWebFetcher } from '@truesparrow/common-js'
+import { InternalWebFetcher, isForDevelopment } from '@truesparrow/common-js'
 import { newIdentityClient } from '@truesparrow/identity-sdk-js'
 
 import * as config from './config'
 import { newPublicContentRouter, newPrivateContentRouter } from './content-router'
 import { Repository } from './repository'
+import { newTestRouter } from './test-router'
 
 
 async function main() {
@@ -35,6 +36,7 @@ async function main() {
 
     const publicContentRouter = newPublicContentRouter(appConfig, repository, identityClient);
     const privateContentRouter = newPrivateContentRouter(appConfig, repository, identityClient);
+    const testRouter = newTestRouter(appConfig, repository);
 
     console.log('Starting up');
 
@@ -46,6 +48,9 @@ async function main() {
     app.disable('x-powered-by');
     app.use('/api/public', publicContentRouter);
     app.use('/api/private', privateContentRouter);
+    if (isForDevelopment(config.ENV)) {
+        app.use('/test', testRouter);
+    }
     app.listen(config.PORT, config.ADDRESS, () => {
         console.log(`Started ${config.NAME} service on ${config.ADDRESS}:${config.PORT}`);
     });

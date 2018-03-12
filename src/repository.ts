@@ -5,6 +5,7 @@ import * as knex from 'knex'
 import { Marshaller, MarshalFrom, ArrayOf } from 'raynor'
 import * as cuid from 'cuid'
 
+import { devOnly } from '@truesparrow/common-js'
 import { startupMigration } from '@truesparrow/common-server-js'
 import {
     Event,
@@ -19,6 +20,8 @@ import {
 import { CreateEventRequest, UpdateEventRequest } from '@truesparrow/content-sdk-js/dtos'
 import { EventEventType } from '@truesparrow/content-sdk-js/events'
 import { User } from '@truesparrow/identity-sdk-js'
+
+import * as config from './config'
 
 
 /** The base class of errors raised by the {@link Repository} and a generic error itself. */
@@ -224,7 +227,7 @@ export class Repository {
 
         const event = new Event();
         event.id = dbId;
-        event.state = EventState.Active;
+        event.state = EventState.Created;
         event.title = 'Default title';
         event.pictureSet = initialPictureSet;
         event.subEventDetails = [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3];
@@ -454,6 +457,17 @@ export class Repository {
             .limit(1);
 
         return dbSubDomains.length == 0;
+    }
+
+    /**
+     * Remove all the data in the database.
+     * @note This method only works in a dev context.
+     */
+    @devOnly(config.ENV)
+    async testClearOut(): Promise<void> {
+        await this._conn('content.event_subdomains').delete();
+        await this._conn('content.event_events').delete();
+        await this._conn('content.events').delete();
     }
 
     private _dbEventToEvent(dbEvent: any): Event {

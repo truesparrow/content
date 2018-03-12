@@ -5,7 +5,8 @@ import * as td from 'testdouble'
 import { Env } from '@truesparrow/common-js'
 import { IdentityClient } from '@truesparrow/identity-sdk-js'
 
-import { AppConfig, newPublicContentRouter, newPrivateContentRouter } from './content-router'
+import { AppConfig } from './app-config'
+import { newPublicContentRouter, newPrivateContentRouter } from './content-router'
 import { Repository } from './repository'
 
 
