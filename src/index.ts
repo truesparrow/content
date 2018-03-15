@@ -36,7 +36,7 @@ async function main() {
 
     const publicContentRouter = newPublicContentRouter(appConfig, repository, identityClient);
     const privateContentRouter = newPrivateContentRouter(appConfig, repository, identityClient);
-    const testRouter = newTestRouter(appConfig, repository);
+    const testRouter = newTestRouter(appConfig, repository, identityClient);
 
     console.log('Starting up');
 

@@ -48,6 +48,7 @@ import { Repository } from './repository'
  *    @path /events?subdomain GET
  * @param config - the application configuration.
  * @param repository - a repository.
+ * @param identityClient - a client for the identity service.
  * @return An {@link express.Router} doing all of the above.
  */
 export function newPublicContentRouter(config: AppConfig, repository: Repository, identityClient: IdentityClient): express.Router {

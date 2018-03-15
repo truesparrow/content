@@ -5,12 +5,25 @@ import { wrap } from 'async-middleware'
 import * as compression from 'compression'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
+import { MarshalFrom } from 'raynor'
 
 import {
     newCommonApiServerMiddleware,
     newLocalCommonServerMiddleware,
     Request
 } from '@truesparrow/common-server-js'
+import {
+    PrivateEventResponse,
+    PrivateEventResponseMarshaller,
+    UpdateEventRequest
+} from '@truesparrow/content-sdk-js/dtos'
+import { IdentityClient, User } from '@truesparrow/identity-sdk-js'
+import { RequestWithIdentity } from '@truesparrow/identity-sdk-js/request'
+import {
+    newSessionMiddleware,
+    SessionInfoSource,
+    SessionLevel
+} from '@truesparrow/identity-sdk-js/server'
 
 import { AppConfig } from './app-config'
 import { Repository } from './repository'
@@ -24,9 +37,13 @@ import { Repository } from './repository'
  *     @path /clear-out POST
  * @param config - the application configuration.
  * @param repository - a repository.
+ * @param identityClient - a client for the identity service.
  * @return A {link express.Router} doing the above.
  */
-export function newTestRouter(config: AppConfig, repository: Repository): express.Router {
+export function newTestRouter(config: AppConfig, repository: Repository, identityClient: IdentityClient): express.Router {
+    const updateEventRequestMarshaller = new (MarshalFrom(UpdateEventRequest))();
+    const privateEventResponseMarshaller = new PrivateEventResponseMarshaller();
+
     const testRouter = express.Router();
 
     testRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
@@ -46,6 +63,38 @@ export function newTestRouter(config: AppConfig, repository: Repository): expres
             res.end();
         }
     }));
+
+    testRouter.post('/add-event', [
+        newSessionMiddleware(SessionLevel.SessionAndUser, SessionInfoSource.Header, config.env, identityClient)],
+        wrap(async (req: RequestWithIdentity, res: express.Response) => {
+            let eventDetails: UpdateEventRequest | null = null;
+            try {
+                eventDetails = updateEventRequestMarshaller.extract(req.body);
+            } catch (e) {
+                console.log(e);
+                req.log.warn('Could not decode creation request');
+                res.status(HttpStatus.BAD_REQUEST);
+                res.end();
+                return;
+            }
+
+            try {
+                const event = await repository.testAddEvent(req.session.user as User, eventDetails, req.requestTime);
+
+                const privateEventResponse = new PrivateEventResponse();
+                privateEventResponse.eventIsRemoved = false;
+                privateEventResponse.event = event;
+
+                res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+                res.status(HttpStatus.OK);
+                res.end();
+            } catch (e) {
+                req.log.error(e);
+                req.errorLog.error(e);
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+                res.end();
+            }
+        }));
 
     return testRouter;
 }

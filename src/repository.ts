@@ -253,6 +253,8 @@ export class Repository {
     async updateEvent(user: User, updateEventRequest: UpdateEventRequest, requestTime: Date): Promise<Event> {
         // TODO: improve typing here.
 
+        console.log(updateEventRequest);
+
         const updateDict: any = {
             'time_last_updated': requestTime
         };
@@ -468,6 +470,19 @@ export class Repository {
         await this._conn('content.event_subdomains').delete();
         await this._conn('content.event_events').delete();
         await this._conn('content.events').delete();
+    }
+
+    /**
+     * Add a new {@link Picture} for the event associated with a user.
+     * @param user - the user making the request
+     * @param eventDetails - data about the event to create
+     * @param requestTime - time at which the request is issued
+     * @note This method only works in a dev context.
+     */
+    @devOnly(config.ENV)
+    async testAddEvent(user: User, eventDetails: UpdateEventRequest, requestTime: Date): Promise<Event> {
+        await this.createEvent(user, new CreateEventRequest(), requestTime);
+        return await this.updateEvent(user, eventDetails, requestTime);
     }
 
     private _dbEventToEvent(dbEvent: any): Event {
