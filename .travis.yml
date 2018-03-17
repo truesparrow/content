@@ -22,18 +22,20 @@ addons:
 env:
   global:
   #* Application *#
-  - ENV=TEST
-  - ADDRESS=0.0.0.0
-  - PORT=10000
-  - DATABASE_URL=postgresql://postgres@postgres.test.truesparrow/truesparrow
-  - DATABASE_MIGRATIONS_DIR=./migrations
-  - DATABASE_MIGRATIONS_TABLE=migrations_content
-  - ORIGIN=null
-  - CLIENTS=null
-  - IDENTITY_SERVICE_HOST=null
-  - LOGGLY_TOKEN=null
-  - LOGGLY_SUBDOMAIN=null
-  - ROLLBAR_TOKEN=null
+  #** Common to all services **#
+  - COMMON_ENV=TEST
+  - COMMON_DATABASE_URL=postgresql://postgres@postgres.test.truesparrow/truesparrow
+  - COMMON_DATABASE_MIGRATIONS_DIR=./migrations
+  - COMMON_DATABASE_MIGRATIONS_TABLE=migrations_content
+  - COMMON_IDENTITY_SERVICE_HOST=null
+  - COMMON_LOGGLY_TOKEN=null
+  - COMMON_LOGGLY_SUBDOMAIN=null
+  - COMMON_ROLLBAR_TOKEN=null
+  #** Specific to content service **#
+  - CONTENT_ADDRESS=0.0.0.0
+  - CONTENT_PORT=10002
+  - CONTENT_ORIGIN=null
+  - CONTENT_CLIENTS=null
   #* Travis build *#
   - PGSSLMODE=require
   - GEMFURY_USER=truesparrow
