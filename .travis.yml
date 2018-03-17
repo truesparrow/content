@@ -15,22 +15,27 @@ services:
 
 addons:
   postgresql: "9.6"
+  hosts:
+    - postgres.test.truesparrow
+    - identity.test.truesparrow
 
 env:
   global:
+  #* Application *#
   - ENV=TEST
   - ADDRESS=0.0.0.0
   - PORT=10000
-  - DATABASE_URL=postgresql://postgres@localhost/truesparrow
+  - DATABASE_URL=postgresql://postgres@postgres.test.truesparrow/truesparrow
   - DATABASE_MIGRATIONS_DIR=./migrations
   - DATABASE_MIGRATIONS_TABLE=migrations_content
-  - PGSSLMODE=require
   - ORIGIN=null
   - CLIENTS=null
   - IDENTITY_SERVICE_HOST=null
   - LOGGLY_TOKEN=null
   - LOGGLY_SUBDOMAIN=null
   - ROLLBAR_TOKEN=null
+  #* Travis build *#
+  - PGSSLMODE=require
   - GEMFURY_USER=truesparrow
   # GEMFURY_API_KEY=???
   - secure: "SqfKq/ubRs400F/wbK4ImILygVhpb2l51DKKbGZaJ73OdMefGsa93hkvg+N91RECSxUScx1/HMiHB4L2tdpIH/cFu4Hcl6y0XX8cNBqyzaAUI8mMxP6YA3HBJmRviqNwyI/tqmyEArEPlFZl6jb93ixGIVAJVFTiQb3xEXENIMffb61tvMz16naDypGEe6FgM6aGhAD13YNj6JGjYzLhUm4agMzIWzLsoyROJGLLAh4jDBbW8DRI+hN9EHymm4Pcqa/fl0oTRwaKYSEmOpp28fxk9R7DNAqlivcz1b5ShjgGpuZiPvb3YaGCEXLDh2yUdN5SP/8+ZV8Z6XYC4qoOGcphWFDJ/mMpWc+owoEFBAqtIuLF0pLK4k64uENbzg2fKKEsCQsif4Yo2cIIAQq7Bd4V1RDWeJB83SwdzJhvSIcrIcJBtaXlA9BZfv6kJil3ctpQ1MxuQKgX+d5NixZZCzay4DadGjJ6Etrxj/EvXMwHKBOMqOl/6XePj1AWg8G3X9/d8tJblkmC/ReiIdp7vKPANBtK2klewt97ZSsRuKLkyMdvfSkZ3PLAAZqhJVC5UQT0oQFu1oVCI20y6dmSlCxFDdd/aiUMzQ89+79zV2IbPdm4KuxH9asv05bIpB7bB9oo8tQxy0BjZ4tA+OYnWkx25uUPAJ5dZ4W3VaS9zPs="
