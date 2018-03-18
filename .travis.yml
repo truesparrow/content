@@ -24,9 +24,6 @@ env:
   #* Application *#
   #** Common to all services **#
   - COMMON_ENV=TEST
-  - COMMON_DATABASE_URL=postgresql://postgres@postgres.test.truesparrow/truesparrow
-  - COMMON_DATABASE_MIGRATIONS_DIR=./migrations
-  - COMMON_DATABASE_MIGRATIONS_TABLE=migrations_content
   - COMMON_IDENTITY_SERVICE_HOST=null
   - COMMON_LOGGLY_TOKEN=null
   - COMMON_LOGGLY_SUBDOMAIN=null
@@ -36,6 +33,9 @@ env:
   - CONTENT_PORT=10002
   - CONTENT_ORIGIN=null
   - CONTENT_CLIENTS=null
+  - CONTENT_DATABASE_URL=postgresql://postgres@postgres.test.truesparrow/truesparrow
+  - CONTENT_DATABASE_MIGRATIONS_DIR=./migrations
+  - CONTENT_DATABASE_MIGRATIONS_TABLE=migrations_content
   #* Travis build *#
   - PGSSLMODE=require
   - GEMFURY_USER=truesparrow

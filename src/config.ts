@@ -5,9 +5,6 @@ import { getFromEnv } from '@truesparrow/common-server-js'
 
 export const ENV: Env = parseEnv(getFromEnv('COMMON_ENV'));
 
-export const DATABASE_URL: string = getFromEnv('COMMON_DATABASE_URL');
-export const DATABASE_MIGRATIONS_DIR: string = getFromEnv('COMMON_DATABASE_MIGRATIONS_DIR');
-export const DATABASE_MIGRATIONS_TABLE: string = getFromEnv('COMMON_DATABASE_MIGRATIONS_TABLE');
 export const IDENTITY_SERVICE_HOST: string = getFromEnv('COMMON_IDENTITY_SERVICE_HOST');
 
 export const LOGGLY_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_LOGGLY_TOKEN') : null;
@@ -22,3 +19,7 @@ export const PORT: number = parseInt(getFromEnv('CONTENT_PORT'), 10);
 export const ORIGIN: string = getFromEnv('CONTENT_ORIGIN');
 
 export const CLIENTS: string[] = getFromEnv('CONTENT_CLIENTS').split(',');
+
+export const DATABASE_URL: string = getFromEnv('CONTENT_DATABASE_URL');
+export const DATABASE_MIGRATIONS_DIR: string = getFromEnv('CONTENT_DATABASE_MIGRATIONS_DIR');
+export const DATABASE_MIGRATIONS_TABLE: string = getFromEnv('CONTENT_DATABASE_MIGRATIONS_TABLE');
