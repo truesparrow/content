@@ -8,7 +8,7 @@ import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
 import { MarshalFrom } from 'raynor'
 
-import { isLocal } from '@truesparrow/common-js'
+import { isNotOnServer } from '@truesparrow/common-js'
 import {
     newCommonApiServerMiddleware,
     newCommonServerMiddleware,
@@ -58,7 +58,7 @@ export function newPublicContentRouter(config: AppConfig, repository: Repository
     const publicContentRouter = express.Router();
 
     publicContentRouter.use(cookieParser());
-    if (isLocal(config.env)) {
+    if (isNotOnServer(config.env)) {
         publicContentRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
     } else {
         publicContentRouter.use(newCommonServerMiddleware(
@@ -135,7 +135,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
     const privateContentRouter = express.Router();
 
     privateContentRouter.use(cookieParser());
-    if (isLocal(config.env)) {
+    if (isNotOnServer(config.env)) {
         privateContentRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
     } else {
         privateContentRouter.use(newCommonServerMiddleware(
