@@ -1,5 +1,9 @@
+import { config } from 'dotenv'
+
 import { Env, parseEnv, isOnServer } from '@truesparrow/common-js'
 import { getFromEnv } from '@truesparrow/common-server-js'
+
+config();
 
 // Common to all services
 
