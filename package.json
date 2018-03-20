@@ -1,6 +1,6 @@
 {
     "name": "@truesparrow/content",
-    "version": "0.10.9",
+    "version": "0.10.10",
     "description": "The content service.",
     "author": "CHM SQRT2 Team",
     "scripts": {
@@ -20,7 +20,6 @@
     "filesPack": {
         "out": "e:.",
         "migrations": "c:migrations",
-        "Procfile": "f:Procfile",
         "knexfile.js": "f:knexfile.js",
         "package.json": "f:package.json",
         "tsconfig.json": "f:tsconfig.json"
