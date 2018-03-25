@@ -11,7 +11,7 @@ import { MarshalFrom } from 'raynor'
 import { isNotOnServer } from '@truesparrow/common-js'
 import {
     newCommonApiServerMiddleware,
-    newCommonServerMiddleware,
+    // newCommonServerMiddleware,
     newLocalCommonServerMiddleware,
     Request
 } from '@truesparrow/common-server-js'
@@ -58,15 +58,15 @@ export function newPublicContentRouter(config: AppConfig, repository: Repository
     const publicContentRouter = express.Router();
 
     publicContentRouter.use(cookieParser());
-    if (isNotOnServer(config.env)) {
+    if (true || isNotOnServer(config.env)) {
         publicContentRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
     } else {
-        publicContentRouter.use(newCommonServerMiddleware(
-            config.name,
-            config.env,
-            config.logglyToken as string,
-            config.logglySubdomain as string,
-            config.rollbarToken as string));
+        // publicContentRouter.use(newCommonServerMiddleware(
+        //     config.name,
+        //     config.env,
+        //     config.logglyToken as string,
+        //     config.logglySubdomain as string,
+        //     config.rollbarToken as string));
     }
     publicContentRouter.use(compression({ threshold: 0 }));
     publicContentRouter.use(newCommonApiServerMiddleware(config.clients));
@@ -135,15 +135,15 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
     const privateContentRouter = express.Router();
 
     privateContentRouter.use(cookieParser());
-    if (isNotOnServer(config.env)) {
+    if (true || isNotOnServer(config.env)) {
         privateContentRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
     } else {
-        privateContentRouter.use(newCommonServerMiddleware(
-            config.name,
-            config.env,
-            config.logglyToken as string,
-            config.logglySubdomain as string,
-            config.rollbarToken as string));
+        // privateContentRouter.use(newCommonServerMiddleware(
+        //     config.name,
+        //     config.env,
+        //     config.logglyToken as string,
+        //     config.logglySubdomain as string,
+        //     config.rollbarToken as string));
     }
     privateContentRouter.use(compression({ threshold: 0 }));
     privateContentRouter.use(newCommonApiServerMiddleware(config.clients));

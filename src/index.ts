@@ -3,6 +3,7 @@ import * as knex from 'knex'
 import 'log-timestamp'
 
 import { InternalWebFetcher, isForDevelopment } from '@truesparrow/common-js'
+import { newHealthCheckRouter } from '@truesparrow/common-server-js'
 import { newIdentityClient } from '@truesparrow/identity-sdk-js'
 
 import * as config from './config'
@@ -36,6 +37,7 @@ async function main() {
 
     const publicContentRouter = newPublicContentRouter(appConfig, repository, identityClient);
     const privateContentRouter = newPrivateContentRouter(appConfig, repository, identityClient);
+    const healthCheckRouter = newHealthCheckRouter();
     const testRouter = newTestRouter(appConfig, repository, identityClient);
 
     console.log('Starting up');
@@ -48,6 +50,7 @@ async function main() {
     app.disable('x-powered-by');
     app.use('/api/public', publicContentRouter);
     app.use('/api/private', privateContentRouter);
+    app.use('/status', healthCheckRouter);
     if (isForDevelopment(config.ENV)) {
         app.use('/test', testRouter);
     }
