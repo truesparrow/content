@@ -48,7 +48,7 @@ export function newTestRouter(config: AppConfig, repository: Repository, identit
 
     testRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
     testRouter.use(compression({ threshold: 0 }));
-    testRouter.use(newCommonApiServerMiddleware(config.clients));
+    testRouter.use(newCommonApiServerMiddleware());
 
     testRouter.post('/clear-out', wrap(async (req: Request, res: express.Response) => {
         try {

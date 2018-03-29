@@ -69,7 +69,7 @@ export function newPublicContentRouter(config: AppConfig, repository: Repository
         //     config.rollbarToken as string));
     }
     publicContentRouter.use(compression({ threshold: 0 }));
-    publicContentRouter.use(newCommonApiServerMiddleware(config.clients));
+    publicContentRouter.use(newCommonApiServerMiddleware());
     publicContentRouter.use(newSessionMiddleware(SessionLevel.Session, SessionInfoSource.Header, config.env, identityClient));
 
     publicContentRouter.get('/events', wrap(async (req: Request, res: express.Response) => {
@@ -146,7 +146,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
         //     config.rollbarToken as string));
     }
     privateContentRouter.use(compression({ threshold: 0 }));
-    privateContentRouter.use(newCommonApiServerMiddleware(config.clients));
+    privateContentRouter.use(newCommonApiServerMiddleware());
     privateContentRouter.use(newSessionMiddleware(SessionLevel.SessionAndUser, SessionInfoSource.Header, config.env, identityClient));
 
     privateContentRouter.post('/events', [newCheckXsrfTokenMiddleware()], wrap(async (req: RequestWithIdentity, res: express.Response) => {

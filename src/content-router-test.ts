@@ -14,7 +14,6 @@ describe('PublicContentRouter', () => {
     const localAppConfig: AppConfig = {
         env: Env.Local,
         name: 'identity',
-        clients: ['core'],
         forceDisableLogging: true,
         logglyToken: null,
         logglySubdomain: null,
@@ -24,7 +23,6 @@ describe('PublicContentRouter', () => {
     const stagingAppConfig: AppConfig = {
         env: Env.Staging,
         name: 'identity',
-        clients: ['core'],
         forceDisableLogging: true,
         logglyToken: 'A FAKE TOKEN',
         logglySubdomain: 'a-fake-subdomain',
@@ -59,7 +57,6 @@ describe('PrivateContentRouter', () => {
     const localAppConfig: AppConfig = {
         env: Env.Local,
         name: 'identity',
-        clients: ['core'],
         forceDisableLogging: true,
         logglyToken: null,
         logglySubdomain: null,
@@ -69,7 +66,6 @@ describe('PrivateContentRouter', () => {
     const stagingAppConfig: AppConfig = {
         env: Env.Staging,
         name: 'identity',
-        clients: ['core'],
         forceDisableLogging: true,
         logglyToken: 'A FAKE TOKEN',
         logglySubdomain: 'a-fake-subdomain',

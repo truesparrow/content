@@ -15,24 +15,29 @@ import { newTestRouter } from './test-router'
 async function main() {
     const conn = knex({
         client: 'pg',
-        connection: config.DATABASE_URL
+        connection: {
+            host: config.POSTGRES_HOST,
+            port: config.POSTGRES_PORT,
+            database: config.POSTGRES_DATABASE,
+            user: config.POSTGRES_USERNAME,
+            password: config.POSTGRES_PASSWORD
+        }
     });
     const repository = new Repository(conn);
     const identityClient = newIdentityClient(
         config.ENV,
         config.ORIGIN,
-        config.IDENTITY_SERVICE_HOST,
+        `${config.IDENTITY_SERVICE_HOST}:${config.IDENTITY_SERVICE_PORT}`,
         new InternalWebFetcher()
     );
 
     const appConfig = {
         env: config.ENV,
         name: config.NAME,
-        clients: config.CLIENTS,
         forceDisableLogging: false,
-        logglyToken: config.LOGGLY_TOKEN,
-        logglySubdomain: config.LOGGLY_SUBDOMAIN,
-        rollbarToken: config.ROLLBAR_TOKEN
+        logglyToken: null,
+        logglySubdomain: null,
+        rollbarToken: null
     };
 
     const publicContentRouter = newPublicContentRouter(appConfig, repository, identityClient);
@@ -54,8 +59,8 @@ async function main() {
     if (isForDevelopment(config.ENV)) {
         app.use('/test', testRouter);
     }
-    app.listen(config.PORT, config.ADDRESS, () => {
-        console.log(`Started ${config.NAME} service on ${config.ADDRESS}:${config.PORT}`);
+    app.listen(config.PORT, '0.0.0.0', () => {
+        console.log(`Started ${config.NAME} service on ${config.PORT}`);
     });
 }
 

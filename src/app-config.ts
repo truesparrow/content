@@ -10,11 +10,6 @@ export interface AppConfig {
     /** A unique name for this service. */
     name: string;
     /**
-     * The set of allowed hostnames which can be clients. Will be matched against the Origin header
-     * of incoming requests.
-     */
-    clients: string[];
-    /**
      * Disable all logging. Used for tests. Otherwise logs output to the console in {@link Env.Local}
      * and {@link Env.Test} and to loggly in {@link Env.Staging} or {@link Env.Prod}
      */

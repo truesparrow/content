@@ -12,5 +12,6 @@
 .DS_Store
 
 # Secrets files
-.env
-gcp-*-key.json
+config/gcp-*-key.json
+config/env.content
+config/env.content.test
