@@ -33,8 +33,8 @@ before_script:
 - psql -c "create database truesparrow;" -U postgres
 - psql -c "create user truesparrow with password 'truesparrow';" -U postgres
 - psql -c "grant all on database truesparrow to truesparrow;" -U postgres
-- openssl aes-256-cbc -K $encrypted_407b94a8b54e_key -iv $encrypted_407b94a8b54e_iv -in config/env.content.test.enc -out config/env.content -d
-- openssl aes-256-cbc -K $encrypted_22cca5ef00ec_key -iv $encrypted_22cca5ef00ec_iv -in config/gcp-ci-builder-key.json.enc -out config/gcp-ci-builder-key.json -d
+- openssl aes-256-cbc -K $encrypted_22cca5ef00ec_key -iv $encrypted_22cca5ef00ec_iv -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
 
 script:
 - npm run test
