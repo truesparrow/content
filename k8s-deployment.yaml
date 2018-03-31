@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: content
+  labels:
+    service: content
+    env: staging
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: content
+      env: staging
+      tier: backend
+  minReadySeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        service: content
+        env: staging
+        tier: backend
+    spec:
+      containers:
+      - name: content
+        image: eu.gcr.io/chmsqrt2-truesparrow-common/content:latest
+        ports:
+          - containerPort: 10002
+        livenessProbe:
+          httpGet:
+            path: /status/check
+            port: 10002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /status/check
+            port: 10002
+        envFrom:
+        - configMapRef:
+            name: content
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: content-secrets
+              key: POSTGRES_PASSWORD
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: ["/cloud_sql_proxy"]
+        args: [
+            "-instances=$(POSTGRES_CLOUDSQL_CONNECTION_NAME)=tcp:$(POSTGRES_PORT)",
+            "-credential_file=/secrets/gcp-service-content-key.json"
+          ]
+        envFrom:
+        - configMapRef:
+            name: content
+        volumeMounts:
+        - name: secrets
+          mountPath: "/secrets"
+          readOnly: true
+      volumes:
+      - name: secrets
+        secret:
+          secretName: content-secrets
+          items:
+          - key: SERVICE_CONTENT_SERVICE_KEY
+            path: gcp-service-content-key.json
