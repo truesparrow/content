@@ -25,7 +25,6 @@ async function main() {
     });
     const repository = new Repository(conn);
     const identityClient = newIdentityClient(
-        config.ENV,
         config.ORIGIN,
         `${config.IDENTITY_SERVICE_HOST}:${config.IDENTITY_SERVICE_PORT}`,
         new InternalWebFetcher()
