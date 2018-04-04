@@ -8,6 +8,7 @@ sudo: required
 cache:
   directories:
     - node_modules
+    - "$HOME/google-cloud-sdk"
 
 services:
   - postgresql
@@ -21,10 +22,23 @@ addons:
 
 env:
   global:
+  - PATH=$PATH:${HOME}/google-cloud-sdk/bin
   - PGSSLMODE=require
   - GEMFURY_USER=truesparrow
   # GEMFURY_API_KEY=???
   - secure: "SqfKq/ubRs400F/wbK4ImILygVhpb2l51DKKbGZaJ73OdMefGsa93hkvg+N91RECSxUScx1/HMiHB4L2tdpIH/cFu4Hcl6y0XX8cNBqyzaAUI8mMxP6YA3HBJmRviqNwyI/tqmyEArEPlFZl6jb93ixGIVAJVFTiQb3xEXENIMffb61tvMz16naDypGEe6FgM6aGhAD13YNj6JGjYzLhUm4agMzIWzLsoyROJGLLAh4jDBbW8DRI+hN9EHymm4Pcqa/fl0oTRwaKYSEmOpp28fxk9R7DNAqlivcz1b5ShjgGpuZiPvb3YaGCEXLDh2yUdN5SP/8+ZV8Z6XYC4qoOGcphWFDJ/mMpWc+owoEFBAqtIuLF0pLK4k64uENbzg2fKKEsCQsif4Yo2cIIAQq7Bd4V1RDWeJB83SwdzJhvSIcrIcJBtaXlA9BZfv6kJil3ctpQ1MxuQKgX+d5NixZZCzay4DadGjJ6Etrxj/EvXMwHKBOMqOl/6XePj1AWg8G3X9/d8tJblkmC/ReiIdp7vKPANBtK2klewt97ZSsRuKLkyMdvfSkZ3PLAAZqhJVC5UQT0oQFu1oVCI20y6dmSlCxFDdd/aiUMzQ89+79zV2IbPdm4KuxH9asv05bIpB7bB9oo8tQxy0BjZ4tA+OYnWkx25uUPAJ5dZ4W3VaS9zPs="
+  - GCP_STAGING_PROJECT=chmsqrt2-truesparrow-staging
+  - GCP_STAGING_ZONE=europe-west1-b
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  - GOOGLE_APPLICATION_CREDENTIALS=config/gcp-ci-builder-key.json
+
+before_install:
+- if [ ! -d ${HOME}/google-cloud-sdk/bin ]; then
+    rm -rf ${HOME}/google-cloud-sdk;
+    curl https://sdk.cloud.google.com | bash /dev/stdin --disable-prompts;
+    ${HOME}/google-cloud-sdk/bin/gcloud -q components update kubectl;
+  fi
+- source ${HOME}/google-cloud-sdk/path.bash.inc
 
 install:
 - npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
@@ -51,10 +65,21 @@ deploy:
 - provider: script
   skip_cleanup: true
   script:
-    cat config/gcp-ci-builder-key.json | docker login --username _json_key --password-stdin https://eu.gcr.io;
+    cat ${GOOGLE_APPLICATION_CREDENTIALS} | docker login --username _json_key --password-stdin https://eu.gcr.io;
     docker build --tag eu.gcr.io/chmsqrt2-truesparrow-common/content:$TRAVIS_TAG .;
     docker push eu.gcr.io/chmsqrt2-truesparrow-common/content:$TRAVIS_TAG;
     docker build --tag eu.gcr.io/chmsqrt2-truesparrow-common/content:latest .;
     docker push eu.gcr.io/chmsqrt2-truesparrow-common/content:latest
+  on:
+    tags: true
+- provider: script
+  skip_cleanup: true
+  script:
+    ${HOME}/google-cloud-sdk/bin/gcloud config set project $GCP_STAGING_PROJECT;
+    ${HOME}/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS};
+    ${HOME}/google-cloud-sdk/bin/gcloud container clusters get-credentials chmsqrt2-truesparrow-staging-cluster --zone ${GCP_STAGING_ZONE};
+    kubectl apply -f k8s-service.yaml --record;
+    kubectl apply -f k8s-deployment.yaml --record;
+    kubectl set image deployment/content content=eu.gcr.io/chmsqrt2-truesparrow-common/content:$TRAVIS_TAG
   on:
     tags: true
