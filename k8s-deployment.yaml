@@ -4,14 +4,12 @@ metadata:
   name: content
   labels:
     service: content
-    env: staging
     tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
       service: content
-      env: staging
       tier: backend
   minReadySeconds: 30
   strategy:
@@ -23,7 +21,6 @@ spec:
     metadata:
       labels:
         service: content
-        env: staging
         tier: backend
     spec:
       containers:
