@@ -5,7 +5,7 @@
     "author": "CHM SQRT2 Team",
     "scripts": {
         "build": "tsc",
-        "serve-dev": "mkdir -p out && touch out/index.js && (tsc-watch --onSuccess \"node out/index.js\") | bunyan --output short",
+        "serve-dev": "mkdir -p out && touch out/index.js && (tsc-watch --onSuccess \"node --inspect=0.0.0.0:9229 out/index.js\") | bunyan --output short",
         "serve-prod": "node out/index.js | bunyan --output simple",
         "test": "tsc && istanbul cover --config ./.istanbul.yml ./node_modules/mocha/bin/_mocha --  $(find out -name '*-test.js') && remap-istanbul -i ./build/coverage/coverage-final.json -o ./build/coverage/coverage-remapped.json && coverage-filter -i ./build/coverage/coverage-remapped.json -o ./build/coverage/coverage-filtered.json",
         "push-coverage-to-codecov": "codecov -f ./build/coverage/coverage-filtered.json",

@@ -77,7 +77,6 @@ export function newPublicContentRouter(config: AppConfig, repository: Repository
         try {
             subDomain = subDomainMarshaller.extract(req.query.subdomain);
         } catch (e) {
-            console.log(e);
             req.log.warn('Could not decode subdomain parameter');
             res.status(HttpStatus.BAD_REQUEST);
             res.end();
