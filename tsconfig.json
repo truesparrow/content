@@ -8,16 +8,17 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "strictNullChecks": true,
-        "sourceMap": true,
+        "inlineSourceMap": true,
+        "inlineSources": true,
         "declaration": true,
-	      "experimentalDecorators": true,
+        "experimentalDecorators": true,
         "outDir": "./out"
     },
     "include": [
         "./src/**/*"
     ],
     "exclude": [
-	      "./node_modules",
+        "./node_modules",
         "./migrations"
     ]
 }
