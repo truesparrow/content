@@ -270,6 +270,41 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
         }
     }));
 
+    privateContentRouter.put('/events/ui-mark-skipped-setup-wizard', wrap(async (req: RequestWithIdentity, res: express.Response) => {
+        try {
+            const event = await repository.uiMarkSkippedSetupWizard(req.session.user as User, req.requestTime);
+
+            const privateEventResponse = new PrivateEventResponse();
+            privateEventResponse.eventIsRemoved = false;
+            privateEventResponse.event = event;
+
+            res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+            res.status(HttpStatus.OK);
+            res.end();
+        } catch (e) {
+            if (e.name == 'EventRemovedError') {
+                const privateEventResponse = new PrivateEventResponse();
+                privateEventResponse.eventIsRemoved = true;
+                privateEventResponse.event = null;
+
+                res.write(JSON.stringify(privateEventResponseMarshaller.pack(privateEventResponse)));
+                res.status(HttpStatus.OK);
+                res.end();
+            }
+
+            if (e.name == 'EventNotFoundError') {
+                res.status(HttpStatus.NOT_FOUND);
+                res.end();
+                return;
+            }
+
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
+    }));
+
     privateContentRouter.get('/check-subdomain-available', wrap(async (req: RequestWithIdentity, res: express.Response) => {
         let subDomain: string | null = null;
         try {

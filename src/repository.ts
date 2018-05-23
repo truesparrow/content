@@ -10,6 +10,7 @@ import { startupMigration } from '@truesparrow/common-server-js'
 import {
     Event,
     EventState,
+    EventUiState,
     PictureSet,
     PictureSetMarshaller,
     SubDomainMarshaller,
@@ -126,6 +127,7 @@ export class Repository {
         'content.events.title as event_title',
         'content.events.picture_set as event_picture_set',
         'content.events.subevent_details as event_subevent_details',
+        'content.events.ui_state as event_ui_state',
         'content.events.user_id as event_user_id',
         'content.events.time_created as event_time_created',
         'content.events.time_last_updated as event_time_last_updated',
@@ -138,6 +140,7 @@ export class Repository {
     private readonly _titleMarshaller: TitleMarshaller;
     private readonly _pictureSetMarshaller: Marshaller<PictureSet>;
     private readonly _subEventDetailsArrayMarshaller: Marshaller<SubEventDetails[]>;
+    private readonly _eventUiStateMarshaller: Marshaller<EventUiState>;
     private readonly _subDomainMarshaller: SubDomainMarshaller;
 
     /**
@@ -151,6 +154,7 @@ export class Repository {
         this._titleMarshaller = new TitleMarshaller();
         this._pictureSetMarshaller = new PictureSetMarshaller();
         this._subEventDetailsArrayMarshaller = new (ArrayOf(MarshalFrom(SubEventDetails)))();
+        this._eventUiStateMarshaller = new (MarshalFrom(EventUiState))();
         this._subDomainMarshaller = new SubDomainMarshaller();
     }
 
@@ -175,6 +179,8 @@ export class Repository {
         const initialPictureSet = new PictureSet();
         initialPictureSet.pictures = [];
         const initialSubEventDetails = [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3];
+        const initialUiState = new EventUiState();
+        initialUiState.showSetupWizard = true;
         const initialSubDomain = cuid();
 
         try {
@@ -189,6 +195,7 @@ export class Repository {
                         'subevent_details': {
                             'details': this._subEventDetailsArrayMarshaller.pack(initialSubEventDetails)
                         },
+                        'ui_state': this._eventUiStateMarshaller.pack(initialUiState),
                         'user_id': user.id,
                         'time_created': requestTime,
                         'time_last_updated': requestTime,
@@ -231,6 +238,7 @@ export class Repository {
         event.title = 'Default title';
         event.pictureSet = initialPictureSet;
         event.subEventDetails = [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3];
+        event.uiState = initialUiState;
         event.subDomain = initialSubDomain;
         event.timeCreated = requestTime;
         event.timeLastUpdated = requestTime;
@@ -298,6 +306,14 @@ export class Repository {
                     throw new EventRemovedError('Event exists but is removed');
                 }
 
+                // Ugh, so many writes.
+                await trx.raw(`
+                        update content.events
+                        set ui_state = jsonb_set(ui_state, '{"showSetupWizard"}', 'false')
+                        where id=?
+                    `, [dbEvent['event_id']]);
+                dbEvent['event_ui_state']['showSetupWizard'] = false;
+
                 if (updateDict.hasOwnProperty('current_active_subdomain')) {
                     console.log('here');
                     const dbSubDomains = await trx
@@ -306,7 +322,6 @@ export class Repository {
                         .where({ subdomain: updateDict['current_active_subdomain'], state: 'active' })
                         .limit(1);
 
-                    console.log(dbSubDomains);
                     if (dbSubDomains.length > 0 && dbSubDomains[0]['user_id'] != user.id) {
                         // If somebody else is using this subdomain, we bail.
                         throw new SubDomainInUseError('Subdomain is already in use by another user');
@@ -444,6 +459,53 @@ export class Repository {
     }
 
     /**
+     * Mark the UI state of showing the setup wizard as done
+     * @param user - the user for which this event will be marked
+     * @return The updated event attached to the user.
+     * @throws When the event does not exist, it raises {@link EventNotFoundError}.
+     * @throws When the event has been deleted, it raises {@link EventRemovedError}.
+     */
+    async uiMarkSkippedSetupWizard(user: User, requestTime: Date): Promise<Event> {
+        let dbEvent: any | null = null;
+
+        await this._conn.transaction(async (trx) => {
+            const dbEvents = await trx
+                .from('content.events')
+                .select(Repository._eventPrivateFields)
+                .where({ user_id: user.id })
+                .limit(1);
+
+            if (dbEvents.length == 0) {
+                throw new EventNotFoundError('Event does not exist');
+            }
+
+            dbEvent = dbEvents[0];
+
+            if (dbEvent['event_state'] == EventState.Removed) {
+                throw new EventRemovedError('Event exists but is removed');
+            }
+
+            await trx.raw(`
+                    update content.events
+                    set ui_state = jsonb_set(ui_state, '{"showSetupWizard"}', 'false')
+                    where id=?
+                `, [dbEvent['event_id']]);
+            dbEvent['event_ui_state']['showSetupWizard'] = false;
+
+            await trx
+                .from('content.event_events')
+                .insert({
+                    'type': EventEventType.UiMarkedSkippedSetupWizard,
+                    'timestamp': requestTime,
+                    'data': null,
+                    'event_id': dbEvent['event_id']
+                });
+        });
+
+        return this._dbEventToEvent(dbEvent);
+    }
+
+    /**
      * Check whether a subdomain is available for an event or not. Any of the active subdomains
      * of the current user are considered to be used, but none of the others.
      * @note There's a strong assumption that each user has at most one event.
@@ -493,6 +555,8 @@ export class Repository {
         event.pictureSet = this._pictureSetMarshaller.extract(dbEvent['event_picture_set']);
         event.subEventDetails = this._subEventDetailsArrayMarshaller.extract(
             dbEvent['event_subevent_details']['details']);
+        event.uiState = this._eventUiStateMarshaller.extract(
+            dbEvent['event_ui_state']);
         event.subDomain = this._subDomainMarshaller.extract(
             dbEvent['event_current_active_subdomain']);
         event.timeCreated = new Date(dbEvent['event_time_created']);
