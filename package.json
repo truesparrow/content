@@ -31,7 +31,7 @@
         "@truesparrow/content-sdk-js": "latest",
         "@truesparrow/identity-sdk-js": "latest",
         "async-middleware": "=1.2.1",
-        "chargebee": "^2.3.9",
+        "chargebee": "=2.3.9",
         "compression": "=1.7.1",
         "cookie-parser": "=1.4.3",
         "cuid": "=2.1.0",
