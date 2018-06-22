@@ -9,6 +9,7 @@ import { devOnly } from '@truesparrow/common-js'
 import { startupMigration } from '@truesparrow/common-server-js'
 import {
     Event,
+    EventPlan,
     EventState,
     EventUiState,
     PictureSet,
@@ -128,6 +129,10 @@ export class Repository {
         'content.events.picture_set as event_picture_set',
         'content.events.subevent_details as event_subevent_details',
         'content.events.ui_state as event_ui_state',
+        'content.events.subscription_plan as event_subscription_plan',
+        'content.events.subscription_id as event_subscription_id',
+        'content.events.subscription_customer_id as event_subscription_customer_id',
+        'content.events.subscription_active as event_subscription_active',
         'content.events.user_id as event_user_id',
         'content.events.time_created as event_time_created',
         'content.events.time_last_updated as event_time_last_updated',
@@ -168,12 +173,14 @@ export class Repository {
      * Create an event for the given user. The resulting event will be in the {@link EventState.Created} state.
      * @param user - the user for which the event is created.
      * @param createEventRequest - details about the event to be created.
+     * @param subscriptionId - subscription id in chargbee.
+     * @param subscriptionCustomerId - the customer id in chargebee.
      * @param requestTime - the time at which the request was issued to the service. Used to
      *     populate various "modified_at" fields.
      * @return The representation of the newly created event.
      * @throws If the event already exists throws {@link EventAlreadyExistsError}.
      */
-    async createEvent(user: User, createEventRequest: CreateEventRequest, requestTime: Date): Promise<Event> {
+    async createEvent(user: User, createEventRequest: CreateEventRequest, subscriptionId: string | null, subscriptionCustomerId: string | null, requestTime: Date): Promise<Event> {
         let dbId: number = -1;
 
         const initialPictureSet = new PictureSet();
@@ -196,6 +203,10 @@ export class Repository {
                             'details': this._subEventDetailsArrayMarshaller.pack(initialSubEventDetails)
                         },
                         'ui_state': this._eventUiStateMarshaller.pack(initialUiState),
+                        'subscription_plan': createEventRequest.plan,
+                        'subscription_id': subscriptionId,
+                        'subscription_customer_id': subscriptionCustomerId,
+                        'subscription_active': subscriptionId != null && subscriptionCustomerId != null,
                         'user_id': user.id,
                         'time_created': requestTime,
                         'time_last_updated': requestTime,
@@ -239,6 +250,7 @@ export class Repository {
         event.pictureSet = initialPictureSet;
         event.subEventDetails = [SUB_EVENT_DETAILS_1, SUB_EVENT_DETAILS_2, SUB_EVENT_DETAILS_3];
         event.uiState = initialUiState;
+        event.plan = createEventRequest.plan;
         event.subDomain = initialSubDomain;
         event.timeCreated = requestTime;
         event.timeLastUpdated = requestTime;
@@ -260,8 +272,6 @@ export class Repository {
      */
     async updateEvent(user: User, updateEventRequest: UpdateEventRequest, requestTime: Date): Promise<Event> {
         // TODO: improve typing here.
-
-        console.log(updateEventRequest);
 
         const updateDict: any = {
             'time_last_updated': requestTime
@@ -395,6 +405,42 @@ export class Repository {
         return this._dbEventToEvent(dbEvent);
     }
 
+    async deleteEvent(user: User, requestTime: Date): Promise<void> {
+        const updateDict: any = {
+            'state': EventState.Removed,
+            'time_last_updated': requestTime,
+            'time_removed': requestTime
+        };
+
+        try {
+            await this._conn.transaction(async (trx) => {
+                const dbEvents = await trx
+                    .from('content.events')
+                    .where({ user_id: user.id })
+                    .andWhere('state', 'in', [EventState.Active, EventState.Created])
+                    .returning(Repository._eventPrivateFields)
+                    .update(updateDict) as any[];
+
+                if (dbEvents.length == 0) {
+                    throw new EventNotFoundError('Event does not exist');
+                }
+
+                const dbEvent = dbEvents[0];
+
+                await trx
+                    .from('content.event_events')
+                    .insert({
+                        'type': EventEventType.Removed,
+                        'timestamp': requestTime,
+                        'data': null,
+                        'event_id': dbEvent['event_id']
+                    });
+            });
+        } catch (e) {
+            throw e;
+        }
+    }
+
     /**
      * Retrieve the event attached to the user.
      * @param user - The user for which the event should be retrieved.
@@ -523,6 +569,26 @@ export class Repository {
         return dbSubDomains.length == 0;
     }
 
+    async getChargebeeCustomerIdForUser(user: User): Promise<string> {
+        const dbEvents = await this._conn('content.event')
+            .select(['chargebee_customer_id'])
+            .where({ user_id: user.id })
+            .andWhere('state', 'in', [EventState.Active, EventState.Created])
+            .limit(1);
+
+        if (dbEvents.length == 0) {
+            throw new EventNotFoundError('Event does not exist');
+        }
+
+        const dbEvent = dbEvents[0];
+
+        if (dbEvent['event_state'] == EventState.Removed) {
+            throw new EventNotFoundError('Event exists but is removed');
+        }
+
+        return dbEvent['chargebee_customer_id'];
+    }
+
     /**
      * Remove all the data in the database.
      * @note This method only works in a dev context.
@@ -543,7 +609,7 @@ export class Repository {
      */
     @devOnly(config.ENV)
     async testAddEvent(user: User, eventDetails: UpdateEventRequest, requestTime: Date): Promise<Event> {
-        await this.createEvent(user, new CreateEventRequest(), requestTime);
+        await this.createEvent(user, new CreateEventRequest(), null, null, requestTime);
         return await this.updateEvent(user, eventDetails, requestTime);
     }
 
@@ -557,6 +623,7 @@ export class Repository {
             dbEvent['event_subevent_details']['details']);
         event.uiState = this._eventUiStateMarshaller.extract(
             dbEvent['event_ui_state']);
+        event.plan = dbEvent['event_subscription_plan'] as EventPlan;
         event.subDomain = this._subDomainMarshaller.extract(
             dbEvent['event_current_active_subdomain']);
         event.timeCreated = new Date(dbEvent['event_time_created']);

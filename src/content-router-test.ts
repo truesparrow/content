@@ -40,15 +40,15 @@ describe('PublicContentRouter', () => {
     });
 
     it('can be constructed', () => {
-        const identityRouter = newPublicContentRouter(localAppConfig, repository as Repository, identityClient as IdentityClient);
+        const contentRouter = newPublicContentRouter(localAppConfig, repository as Repository, identityClient as IdentityClient);
 
-        expect(identityRouter).is.not.null;
+        expect(contentRouter).is.not.null;
     });
 
     it('can be constructed with prod settings', () => {
-        const identityRouter = newPublicContentRouter(stagingAppConfig, repository as Repository, identityClient as IdentityClient);
+        const contentRouter = newPublicContentRouter(stagingAppConfig, repository as Repository, identityClient as IdentityClient);
 
-        expect(identityRouter).is.not.null;
+        expect(contentRouter).is.not.null;
     });
 });
 
@@ -78,19 +78,22 @@ describe('PrivateContentRouter', () => {
     const identityClient = td.object({
     });
 
+    const chargebeeClient = td.object({
+    });
+
     afterEach('reset test doubles', () => {
         td.reset();
     });
 
     it('can be constructed', () => {
-        const identityRouter = newPrivateContentRouter(localAppConfig, repository as Repository, identityClient as IdentityClient);
+        const contentRouter = newPrivateContentRouter(localAppConfig, repository as Repository, identityClient as IdentityClient, chargebeeClient);
 
-        expect(identityRouter).is.not.null;
+        expect(contentRouter).is.not.null;
     });
 
     it('can be constructed with prod settings', () => {
-        const identityRouter = newPrivateContentRouter(stagingAppConfig, repository as Repository, identityClient as IdentityClient);
+        const contentRouter = newPrivateContentRouter(stagingAppConfig, repository as Repository, identityClient as IdentityClient, chargebeeClient);
 
-        expect(identityRouter).is.not.null;
+        expect(contentRouter).is.not.null;
     });
 });

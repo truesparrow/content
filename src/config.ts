@@ -22,3 +22,6 @@ export const POSTGRES_MIGRATIONS_TABLE: string = getFromEnv('POSTGRES_MIGRATIONS
 
 export const IDENTITY_SERVICE_HOST: string = getFromEnv('IDENTITY_SERVICE_HOST');
 export const IDENTITY_SERVICE_PORT: number = parseInt(getFromEnv('IDENTITY_SERVICE_PORT'), 10);
+
+export const CHARGEBEE_SITE: string = getFromEnv('CHARGEBEE_SITE');
+export const CHARGEBEE_KEY: string = getFromEnv('CHARGEBEE_KEY');

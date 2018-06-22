@@ -122,9 +122,10 @@ export function newPublicContentRouter(config: AppConfig, repository: Repository
  * @param config - the application configuration.
  * @param repository - a repository.
  * @param identityClient - a client for the identity service.
+ * @param chargebeeClient - a client for Chargebee.
  * @return An {@link express.Router} doing all of the above.
  */
-export function newPrivateContentRouter(config: AppConfig, repository: Repository, identityClient: IdentityClient): express.Router {
+export function newPrivateContentRouter(config: AppConfig, repository: Repository, identityClient: IdentityClient, chargebeeClient: any): express.Router {
     const createEventRequestMarshaller = new (MarshalFrom(CreateEventRequest))();
     const updateEventRequestMarshaller = new (MarshalFrom(UpdateEventRequest))();
     const subDomainMarshaller = new SubDomainMarshaller();
@@ -159,8 +160,31 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
             return;
         }
 
+        let subscriptionId = '';
+        let subscriptionCustomerId = '';
+
         try {
-            const event = await repository.createEvent(req.session.user as User, createEventRequest, req.requestTime);
+            const user = req.session.user as User;
+            const subscriptionResult = await chargebeeClient.subscription.create({
+                plan_id: 'quick-starter',
+                customer: {
+                    email: user.emailAddress,
+                    first_name: user.firstName,
+                    last_name: user.lastName
+                }
+            }).request();
+
+            subscriptionId = subscriptionResult.subscription.id;
+            subscriptionCustomerId = subscriptionResult.subscription.customer_id;
+        } catch (e) {
+            req.log.warn('Could not make Chargebee call');
+            res.status(HttpStatus.BAD_GATEWAY);
+            res.end();
+            return;
+        }
+
+        try {
+            const event = await repository.createEvent(req.session.user as User, createEventRequest, subscriptionId, subscriptionCustomerId, req.requestTime);
 
             const privateEventResponse = new PrivateEventResponse();
             privateEventResponse.eventIsRemoved = false;
@@ -224,6 +248,26 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
 
             if (e.name == 'SubDomainInUseError') {
                 res.status(HttpStatus.CONFLICT);
+                res.end();
+                return;
+            }
+
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
+    }));
+
+    privateContentRouter.delete('/events', wrap(async (req: RequestWithIdentity, res: express.Response) => {
+        try {
+            await repository.deleteEvent(req.session.user as User, req.requestTime);
+
+            res.status(HttpStatus.OK);
+            res.end();
+        } catch (e) {
+            if (e.name == 'EventNotFoundError') {
+                res.status(HttpStatus.NOT_FOUND);
                 res.end();
                 return;
             }
@@ -324,6 +368,29 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
             checkSubDomainAvailableResponse.available = available;
 
             res.write(JSON.stringify(checkSubDomainAvailableResponseMarshaller.pack(checkSubDomainAvailableResponse)));
+            res.status(HttpStatus.OK);
+            res.end();
+        } catch (e) {
+            req.log.error(e);
+            req.errorLog.error(e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
+    }));
+
+    privateContentRouter.get('/events/chargebee-management-page-uri', wrap(async (req: RequestWithIdentity, res: express.Response) => {
+        try {
+            const customerId = await repository.getChargebeeCustomerIdForUser(req.session.user as User);
+
+            const portalSessionResponse = await chargebeeClient.portal_session.create({
+                customer: {
+                    id: customerId
+                }
+            }).request();
+
+            res.write(JSON.stringify({
+                manageAccountUri: portalSessionResponse.portal_session.access_url
+            }));
             res.status(HttpStatus.OK);
             res.end();
         } catch (e) {

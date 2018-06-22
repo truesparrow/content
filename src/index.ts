@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as knex from 'knex'
 import 'log-timestamp'
+const chargbee = require('chargebee');
 
 import { InternalWebFetcher, isForDevelopment } from '@truesparrow/common-js'
 import { newHealthCheckRouter } from '@truesparrow/common-server-js'
@@ -29,6 +30,10 @@ async function main() {
         `${config.IDENTITY_SERVICE_HOST}:${config.IDENTITY_SERVICE_PORT}`,
         new InternalWebFetcher()
     );
+    chargbee.configure({
+        site: config.CHARGEBEE_SITE,
+        api_key: config.CHARGEBEE_KEY
+    });
 
     const appConfig = {
         env: config.ENV,
@@ -40,7 +45,7 @@ async function main() {
     };
 
     const publicContentRouter = newPublicContentRouter(appConfig, repository, identityClient);
-    const privateContentRouter = newPrivateContentRouter(appConfig, repository, identityClient);
+    const privateContentRouter = newPrivateContentRouter(appConfig, repository, identityClient, chargbee);
     const healthCheckRouter = newHealthCheckRouter();
     const testRouter = newTestRouter(appConfig, repository, identityClient);
 
