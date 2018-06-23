@@ -166,7 +166,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
         try {
             const user = req.session.user as User;
             const subscriptionResult = await chargebeeClient.subscription.create({
-                plan_id: 'quick-starter',
+                plan_id: createEventRequest.plan,
                 customer: {
                     email: user.emailAddress,
                     first_name: user.firstName,
@@ -261,6 +261,12 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
 
     privateContentRouter.delete('/events', wrap(async (req: RequestWithIdentity, res: express.Response) => {
         try {
+            const chargebeeIds = await repository.getChargebeeIdsForUser(req.session.user as User);
+
+            if (chargebeeIds != null) {
+                await chargebeeClient.subscription.cancel(chargebeeIds.subscriptionId).request();
+            }
+
             await repository.deleteEvent(req.session.user as User, req.requestTime);
 
             res.status(HttpStatus.OK);
@@ -380,11 +386,17 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
 
     privateContentRouter.get('/events/chargebee-management-page-uri', wrap(async (req: RequestWithIdentity, res: express.Response) => {
         try {
-            const customerId = await repository.getChargebeeCustomerIdForUser(req.session.user as User);
+            const chargebeeIds = await repository.getChargebeeIdsForUser(req.session.user as User);
+
+            if (chargebeeIds == null) {
+                res.status(HttpStatus.NOT_FOUND);
+                res.end();
+                return;
+            }
 
             const portalSessionResponse = await chargebeeClient.portal_session.create({
                 customer: {
-                    id: customerId
+                    id: chargebeeIds.customerId
                 }
             }).request();
 

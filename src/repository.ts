@@ -110,6 +110,11 @@ SUB_EVENT_DETAILS_3.display = new SubEventDisplayInfo();
 SUB_EVENT_DETAILS_3.display.icon = 'reception';
 SUB_EVENT_DETAILS_3.display.color = '#FF3333';
 
+export interface ChargebeeIds {
+    subscriptionId: string;
+    customerId: string;
+}
+
 /**
  * The final arbiter of business logic and the handler of interactions with the storage engine.
  * @note Each method represents an action which can be done on the entities the content service
@@ -569,9 +574,9 @@ export class Repository {
         return dbSubDomains.length == 0;
     }
 
-    async getChargebeeCustomerIdForUser(user: User): Promise<string> {
-        const dbEvents = await this._conn('content.event')
-            .select(['chargebee_customer_id'])
+    async getChargebeeIdsForUser(user: User): Promise<ChargebeeIds | null> {
+        const dbEvents = await this._conn('content.events')
+            .select(['subscription_id', 'subscription_customer_id'])
             .where({ user_id: user.id })
             .andWhere('state', 'in', [EventState.Active, EventState.Created])
             .limit(1);
@@ -586,7 +591,17 @@ export class Repository {
             throw new EventNotFoundError('Event exists but is removed');
         }
 
-        return dbEvent['chargebee_customer_id'];
+        const subscriptionId = dbEvent['subscription_id'];
+        const subscriptionCustomerId = dbEvent['subscription_customer_id'];
+
+        if (subscriptionId == null || subscriptionCustomerId == null) {
+            return null;
+        }
+
+        return {
+            subscriptionId: subscriptionId,
+            customerId: subscriptionCustomerId
+        };
     }
 
     /**
