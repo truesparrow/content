@@ -42,6 +42,11 @@ spec:
         - configMapRef:
             name: content
         env:
+        - name: CHARGEBEE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: content-secrets
+              key: CHARGEBEE_KEY
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
