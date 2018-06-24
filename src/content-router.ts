@@ -177,7 +177,7 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
             subscriptionId = subscriptionResult.subscription.id;
             subscriptionCustomerId = subscriptionResult.subscription.customer_id;
         } catch (e) {
-            req.log.warn('Could not make Chargebee call');
+            req.log.error(e);
             res.status(HttpStatus.BAD_GATEWAY);
             res.end();
             return;
