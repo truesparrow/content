@@ -169,8 +169,8 @@ export function newPrivateContentRouter(config: AppConfig, repository: Repositor
                 plan_id: createEventRequest.plan,
                 customer: {
                     email: user.emailAddress,
-                    first_name: user.firstName,
-                    last_name: user.lastName
+                    first_name: user.firstName || user.name,
+                    last_name: user.lastName || user.name
                 }
             }).request();
 
